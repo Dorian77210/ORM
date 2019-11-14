@@ -5,5 +5,8 @@ import orm.ORM;
 public class BaseModel
 {
 
-    
+    public BaseModel()
+    {
+        
+    }
 }
