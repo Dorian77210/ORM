@@ -7,10 +7,17 @@ import java.sql.SQLException;
 
 import java.io.File;
 
+import java.util.List;
+
+// local libs
 import org.json.JSONObject;
 
-// local imports
+// personnal imports
 import json.JSONReader;
+
+import orm.query.SQLQuery;
+import orm.query.clause.AbstractClause;
+import orm.query.clause.SelectClause;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -47,11 +54,20 @@ public class ORM
      */
     private Connection currentConnection;
 
-    public static final ORM instance = new ORM();
+    private static final ORM instance = new ORM();
 
     private ORM()
     {
         // nothing for the moment
+    }
+
+    /**
+     * Get the instance of the current ORM
+     * @return The instance of the current ORM
+     */
+    public static final ORM instance()
+    {
+        return instance;
     }
 
     /**
@@ -95,7 +111,7 @@ public class ORM
      * @param password The password for the databse
      * @return <code>true</code> if the connection has been established, <code>false</code>
      */
-    public boolean connect(String hostname, String user, String password)
+    private boolean connect(String hostname, String user, String password)
     {
         // try to get a connection with the database
         try
@@ -148,8 +164,8 @@ public class ORM
      * @return <code>true</code> if the driver has been correctly loaded, <code>false</code> else
      */
 
-     public static final boolean loadDriver(Driver driver)
-     {
+    public static final boolean loadDriver(Driver driver)
+    {
         try
         {
             Class.forName(driver.getClass().getCanonicalName());
@@ -159,5 +175,40 @@ public class ORM
         }
 
         return true;
-     }
+    }
+
+    // ---------- Select methods ----------- //
+
+    /**
+     * Create a select clause for the current query
+     * @param field The field to select 
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery select(String field)
+    {
+        AbstractClause select = new SelectClause(field);
+        return new SQLQuery(select);
+    }
+
+    /**
+     * Create a select clause for the current query
+     * @param fields The fields to select
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery select(String ...fields)
+    {
+        AbstractClause select = new SelectClause(fields);
+        return new SQLQuery(select);
+    }
+
+    /**
+     * Create a select clause for the current query
+     * @param fieldList The list of the fields to select
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery select(List<String> listFields)
+    {
+        AbstractClause select = new SelectClause(listFields);
+        return new SQLQuery(select);
+    }
 }

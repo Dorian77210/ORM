@@ -8,7 +8,7 @@ package orm.query.clause;
 
 public abstract class AbstractClause
 {
-    private String clause;
+    protected String clause;
 
     /**
      * Constructor of AbstractClause
