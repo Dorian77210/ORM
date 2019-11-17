@@ -1,11 +1,18 @@
 package orm.query;
 
-import java.util.List;
 import java.util.ArrayList;
+import java.util.List;
 
 // personnal imports
 import orm.query.clause.AbstractClause;
+import orm.query.clause.CrossJoinClause;
 import orm.query.clause.FromClause;
+import orm.query.clause.InnerJoinClause;
+import orm.query.clause.IntersectClause;
+import orm.query.clause.LeftJoinClause;
+import orm.query.clause.RightJoinClause;
+import orm.query.clause.UnionAllClause;
+import orm.query.clause.UnionClause;
 
 public class SQLQuery
 {
@@ -58,6 +65,105 @@ public class SQLQuery
         AbstractClause from = new FromClause(table);
         this.clauses.add(from);
         this.query += " " + from.getClause();
+        return this;
+    }
+
+    // --------- Jointure methods ----------- //
+   
+    /**
+     * Create an inner jointure
+     * @param table The target table of the jointure
+     * @param firstField The first field of the jointure
+     * @param secondField The second field of the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery innerJoin(String table, String firstField, String secondField)
+    {
+        AbstractClause innerJoin = new InnerJoinClause(table, firstField, secondField);
+        this.clauses.add(innerJoin);
+        this.query += " " + innerJoin.getClause();
+        return this;
+    }
+
+    /**
+     * Create a right jointure
+     * @param table The target table of the jointure
+     * @param firstField The first field of the jointure
+     * @param secondField The second field of the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery rightJoin(String table, String firstField, String secondField)
+    {
+        AbstractClause rightJoin = new RightJoinClause(table, firstField, secondField);
+        this.clauses.add(rightJoin);
+        this.query += " " + rightJoin.getClause();
+        return this;
+    }
+
+    /**
+     * Create a left jointure
+     * @param table The target table of the jointure
+     * @param firstField The first field of the jointure
+     * @param secondField The second field of the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery leftJoin(String table, String firstField, String secondField)
+    {
+        AbstractClause leftJoin = new LeftJoinClause(table, firstField, secondField);
+        this.clauses.add(leftJoin);
+        this.query += " " + leftJoin.getClause();
+        return this;
+    }
+
+    /**
+     * Create a cross jointure
+     * @param table The target table of the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery crossJoin(String table)
+    {
+        AbstractClause crossJoin = new CrossJoinClause(table);
+        this.clauses.add(crossJoin);
+        this.query += " " + crossJoin.getClause();
+        return this;
+    }
+
+    /**
+     * Create an union with other query
+     * @param query The target query
+     * @return The current SQLQuery
+     */
+    public SQLQuery union(SQLQuery query)
+    {
+        AbstractClause union = new UnionClause(query);
+        this.clauses.add(union);
+        this.query += " " + union.getClause();
+        return this;
+    }
+
+    /**
+     * Create an union all with other query
+     * @param query The target query
+     * @return The current SQLQuery
+     */
+    public SQLQuery unionAll(SQLQuery query)
+    {
+        AbstractClause unionAll = new UnionAllClause(query);
+        this.clauses.add(unionAll);
+        this.query += " " + unionAll.getClause();
+        return this;
+    }
+
+    /**
+     * Create an intersection with other query
+     * @param query The target query
+     * @return The current SQLQuery
+     */
+    public SQLQuery intersect(SQLQuery query)
+    {
+        AbstractClause intersect = new IntersectClause(query);
+        this.clauses.add(intersect);
+        this.query += " " + intersect.getClause();
         return this;
     }
 

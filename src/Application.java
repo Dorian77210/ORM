@@ -1,4 +1,5 @@
 import orm.ORM;
+import orm.query.SQLQuery;
 
 public class Application {
 
@@ -6,7 +7,13 @@ public class Application {
         if(ORM.loadMariaDBDriver())
         {
             System.out.println(ORM.instance().connect("config.json"));
-            System.out.println(ORM.select("toto", "titi").from("Users"));
+            System.out.println(ORM.select("toto", "titi")
+                .from("A")
+                .crossJoin("B")
+            );
+
+            SQLQuery query = ORM.select("toto").from("A");
+            System.out.println(ORM.select("titi").from("B").intersect(query));
         }
     }
 }

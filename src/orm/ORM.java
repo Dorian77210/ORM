@@ -169,7 +169,12 @@ public class ORM
         try
         {
             Class.forName(driver.getClass().getCanonicalName());
+            DriverManager.registerDriver(driver);
         } catch(ClassNotFoundException notFoundException)
+        {
+            return false;
+        }
+        catch(SQLException sqlException)
         {
             return false;
         }
