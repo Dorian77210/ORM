@@ -13,6 +13,7 @@ import orm.query.clause.LeftJoinClause;
 import orm.query.clause.RightJoinClause;
 import orm.query.clause.UnionAllClause;
 import orm.query.clause.UnionClause;
+import orm.query.clause.WhereClause;
 
 public class SQLQuery
 {
@@ -164,6 +165,23 @@ public class SQLQuery
         AbstractClause intersect = new IntersectClause(query);
         this.clauses.add(intersect);
         this.query += " " + intersect.getClause();
+        return this;
+    }
+
+    // ----------- Where methods ---------- //
+    
+    /**
+     * Create a where clause
+     * @param field The field for the condition
+     * @param operator The operator for the condition
+     * @param value The value for the condition
+     * @return The current SQLQuery
+     */
+    public SQLQuery where(String field, SQLOperator operator, Object value)
+    {
+        AbstractClause where = new WhereClause(field, operator, value);
+        this.clauses.add(where);
+        this.query += " " + where.getClause();
         return this;
     }
 
