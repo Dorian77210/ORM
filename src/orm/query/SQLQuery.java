@@ -180,7 +180,8 @@ public class SQLQuery
     public SQLQuery where(String field, SQLOperator operator, Object value)
     {
         AbstractClause where = new WhereClause(field, operator, value);
-        this.clauses.add(where);
+        this.cc
+        lauses.add(where);
         this.query += " " + where.getClause();
         return this;
     }

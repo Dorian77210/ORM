@@ -1,6 +1,7 @@
 package orm.query.clause;
 
 import orm.query.SQLOperator;
+import orm.query.condition.WhereCondition;
 
 public class WhereClause extends AbstractClause
 {
@@ -28,5 +29,14 @@ public class WhereClause extends AbstractClause
             .append(new StringBuilder().append(value).toString());
         
         this.clause = buffer.toString();
+    }
+
+    /**
+     * Constructor of the WhereClause
+     * @param whereCondition The condition associated with the WhereClause
+     */
+    public WhereClause(WhereCondition whereCondition)
+    {
+        this(whereCondition.getField(), whereCondition.getOperator(), whereCondition.getValue());
     }
 }
