@@ -8,7 +8,7 @@ public class WhereClause extends AbstractClause
     /**
      * The <code>Where</code> keyword in SQL
      */
-    private static final String WHERE_KEYWORD = "WHERE";
+    protected static final String WHERE_KEYWORD = "WHERE";
 
     /**
      * Constructor of the WhereClause
