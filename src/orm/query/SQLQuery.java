@@ -349,7 +349,10 @@ public class SQLQuery
             result = statement.executeQuery();
             while(result.next())
             {
-                set.push(result);
+                if(!set.push(result))
+                {
+                    throw new FetchingResultException("Error during fetching on the result of your query");
+                }
             }
         } catch(SQLException exception) 
         {

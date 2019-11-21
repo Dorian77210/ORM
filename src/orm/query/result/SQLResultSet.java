@@ -1,14 +1,15 @@
 package orm.query.result;
 
-import java.util.List;
-import java.util.ArrayList;
-
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.SQLException;
 
 import org.json.JSONObject;
 import org.json.JSONArray;
+
+import orm.collection.SQLCollection;
+import orm.builder.IClassBuilder;
+import orm.builder.ClassBuilder;
 
 public class SQLResultSet
 {
@@ -22,17 +23,17 @@ public class SQLResultSet
     /**
      * The JSON key for the name of the table
      */
-    private static final String TABLE_JSON_KEY = "table";
+    public static final String TABLE_JSON_KEY = "table";
 
     /**
      * The JSON key for the value of column
      */
-    private static final String COLUMN_VALUE_JSON_KEY = "columnValue";
+    public static final String COLUMN_VALUE_JSON_KEY = "columnValue";
 
     /**
      * The JSON key for the name of a column
      */
-    private static final String COLUMN_NAME_JSON_KEY = "columnName";
+    public static final String COLUMN_NAME_JSON_KEY = "columnName";
 
     /**
      * Constructor of SQLResultSet
@@ -67,7 +68,6 @@ public class SQLResultSet
             }
 
             this.set.put(json);
-            System.out.println(json);
         } catch(SQLException exception)
         {
             System.out.println(exception.getMessage());
@@ -75,5 +75,22 @@ public class SQLResultSet
         }
 
         return true;
+    }
+
+    public <T> SQLCollection<T> build(Class<T> clazz)
+    {
+        IClassBuilder builder = new ClassBuilder();
+        return builder.build(clazz, this);
+    }
+
+    // --------- Getters --------- //
+
+    /**
+     * Gte the current result 
+     * @return The result
+     */
+    public JSONArray getResult()
+    {
+        return this.set;
     }
 }
