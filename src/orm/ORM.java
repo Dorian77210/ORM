@@ -4,13 +4,20 @@ import java.sql.DriverManager;
 import java.sql.Connection;
 import java.sql.Driver;
 import java.sql.SQLException;
-
+import java.sql.Statement;
 import java.io.File;
 
+import java.util.List;
+
+// local libs
 import org.json.JSONObject;
 
-// local imports
+// personnal imports
 import json.JSONReader;
+
+import orm.query.SQLQuery;
+import orm.query.clause.AbstractClause;
+import orm.query.clause.SelectClause;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -41,13 +48,15 @@ public class ORM
      * JSON key to get the port in the config file
      */
     private static final String PORT_JSON_KEY = "port";
+    /**
+     * JSON key for the database to use
+     */
+    private static final String DATABASE_JSON_KEY = "database";
 
     /**
-     * The current connection for the database
+     * The current connection to the database
      */
-    private Connection currentConnection;
-
-    public static final ORM instance = new ORM();
+    private static Connection currentConnection;
 
     private ORM()
     {
@@ -60,9 +69,9 @@ public class ORM
      * 
      * @return <code>true</code> if the connection has been established, <code>false</code>
      */
-    public boolean connect(String jsonPath) 
+    public static boolean connect(String jsonPath) 
     {
-        return this.connect(new File(jsonPath));
+        return connect(new File(jsonPath));
     }
 
     /**
@@ -70,7 +79,7 @@ public class ORM
      * @param file The JSON config file
      * @return <code>true</code> if the connection has been established, <code>false</code>
      */
-    public boolean connect(File file)
+    public static boolean connect(File file)
     {
         JSONObject json = JSONReader.readJSONFile(file);
         if(json == null)
@@ -84,44 +93,70 @@ public class ORM
         String hostname = json.getString(HOSTNAME_JSON_KEY);
         String port = json.getString(PORT_JSON_KEY);
         String url = "jdbc:mysql://" + hostname + ":" + port;
+        String database = json.getString(DATABASE_JSON_KEY);
 
-        return this.connect(url, user, password);
+        return connect(url, database, user, password);
     }
 
     /**
      * Establish a connection with the database
      * @param hostname The hostname of the database
+     * @param database The database to use
      * @param user The user name for the database
      * @param password The password for the databse
      * @return <code>true</code> if the connection has been established, <code>false</code>
      */
-    public boolean connect(String hostname, String user, String password)
+    private static boolean connect(String hostname, String database, String user, String password)
     {
         // try to get a connection with the database
         try
         {
-            this.currentConnection = DriverManager.getConnection(hostname, user, password);
+            ORM.currentConnection = DriverManager.getConnection(hostname, user, password);
         } catch(SQLException connectionException)
         {
             System.err.println("Not enable to get a connection with your database");
             connectionException.printStackTrace();
             return false;
         }
+
+        try {
+            Statement stmt = ORM.currentConnection.createStatement();
+            stmt.execute("use " + database);
+            stmt.close();
+        } catch(SQLException chooseDatabaseException)
+        {
+            System.out.println(chooseDatabaseException.getMessage());
+            return false;
+        }
+
  
         return true;
     }
 
-    public boolean close()
+    /**
+     * Close the connection to the database
+     * @return <code>true</code> if the connection is closed, else <code>false</code>
+     */
+    public static boolean close()
     {
         try
         {
-            this.currentConnection.close();
+            ORM.currentConnection.close();
         } catch(SQLException closeException)
         {
             return false;
         }
 
         return true;
+    }
+
+    /**
+     * Get the current connection
+     * @return The current connection
+     */
+    public static Connection getConnection()
+    {
+        return ORM.currentConnection;
     }
 
     /**
@@ -148,16 +183,56 @@ public class ORM
      * @return <code>true</code> if the driver has been correctly loaded, <code>false</code> else
      */
 
-     public static final boolean loadDriver(Driver driver)
-     {
+    public static final boolean loadDriver(Driver driver)
+    {
         try
         {
             Class.forName(driver.getClass().getCanonicalName());
+            DriverManager.registerDriver(driver);
         } catch(ClassNotFoundException notFoundException)
+        {
+            return false;
+        }
+        catch(SQLException sqlException)
         {
             return false;
         }
 
         return true;
-     }
+    }
+
+    // ---------- Select methods ----------- //
+
+    /**
+     * Create a select clause for the current query
+     * @param field The field to select 
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery select(String field)
+    {
+        AbstractClause select = new SelectClause(field);
+        return new SQLQuery(select);
+    }
+
+    /**
+     * Create a select clause for the current query
+     * @param fields The fields to select
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery select(String ...fields)
+    {
+        AbstractClause select = new SelectClause(fields);
+        return new SQLQuery(select);
+    }
+
+    /**
+     * Create a select clause for the current query
+     * @param fieldList The list of the fields to select
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery select(List<String> listFields)
+    {
+        AbstractClause select = new SelectClause(listFields);
+        return new SQLQuery(select);
+    }
 }
