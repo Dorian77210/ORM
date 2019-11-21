@@ -1,6 +1,6 @@
 package orm.query.clause;
 
-import orm.query.SQLOperator;
+import orm.query.operator.SQLOperator;
 import orm.query.condition.WhereCondition;
 
 public class WhereClause extends AbstractClause

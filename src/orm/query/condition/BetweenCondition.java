@@ -1,26 +1,13 @@
 package orm.query.condition;
 
-public class BetweenCondition implements AbstractCondition
+import orm.query.clause.AbstractClause;
+
+public class BetweenCondition extends AbstractClause
 {
     /**
      * The <code>Between</code> keyword in SQL
      */
     private static final String BETWEEN_KEYWORD = "BETWEEN";
-
-    /**
-     * The first value of the condition
-     */
-    private Object firstValue;
-
-    /**
-     * The second value of the condition
-     */
-    private Object secondValue;
-
-    /**
-     * The target field
-     */
-    private String field;
 
     /**
      * Constructor of the BetweenCondition
@@ -30,29 +17,16 @@ public class BetweenCondition implements AbstractCondition
      */
     public BetweenCondition(String field, Object firstValue, Object secondValue)
     {
-        this.field = field;
-        this.firstValue = firstValue;
-        this.secondValue = secondValue;
+        super();
+        StringBuffer buffer = new StringBuffer()
+            .append(field)
+            .append(" ")
+            .append(BETWEEN_KEYWORD)
+            .append(" ")
+            .append(firstValue)
+            .append(" AND ")
+            .append(secondValue);
+
+        this.clause = buffer.toString();
     }
-
-    @Override
-    /**
-     * Get the condition
-     * @return The condition
-     */
-    public String getCondition()
-    {
-        StringBuffer buffer = new StringBuffer();
-        buffer.append(this.field)
-              .append(" ")
-              .append(BETWEEN_KEYWORD)
-              .append(" ")
-              .append(new StringBuffer().append(this.firstValue).toString())
-              .append(" ")
-              .append(AndCondition.AND_KEYWORD)
-              .append(" ")
-              .append(new StringBuffer().append(this.secondValue).toString());
-
-        return buffer.toString();
-    }   
 }

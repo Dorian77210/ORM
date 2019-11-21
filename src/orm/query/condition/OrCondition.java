@@ -4,39 +4,39 @@ import orm.query.operator.SQLOperator;
 
 import orm.query.clause.AbstractClause;
 
-public class AndCondition extends AbstractCondition
+public class OrCondition extends AbstractCondition
 {
     /**
-     * The <code>And</code> keyword in SQL
+     * The <code>Or</code> keyword in SQL
      */
-    public static final String AND_KEYWORD = "AND";
+    private static final String OR_KEYWORD = "OR";
 
     /**
-     * Constructor of AndCondition
+     * Constructor of OrCondition
      * @param field The target field of the condition
      * @param operator The SQL operator for the condition
      * @param value The target value
      */
-    public AndCondition(String field, SQLOperator operator, Object value)
+    public OrCondition(String field, SQLOperator operator, Object value)
     {
-        super(field, operator, value, AND_KEYWORD);
+        super(field, operator, value, OR_KEYWORD);
     }
 
     /**
-     * Constructor of AndConditon
+     * Constructor of OrCondition
      * @param condition The condition
      */
-    public AndCondition(WhereCondition condition)
+    public OrCondition(WhereCondition condition)
     {
         this(condition.getField(), condition.getOperator(), condition.getValue());
     }
 
     /**
-     * Constructor of AndCondition
+     * Constructor of OrCondition
      * @param clause The target clause
      */
-    public AndCondition(AbstractClause clause)
+    public OrCondition(AbstractClause clause)
     {
-        super(clause, AND_KEYWORD);
+        super(clause, OR_KEYWORD);
     }
 }

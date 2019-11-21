@@ -1,8 +1,8 @@
-package orm.query.clause;
+package orm.query.clause.ensemblist;
 
 import orm.query.SQLQuery;
 
-public class UnionClause extends AbstractClause
+public class UnionClause extends AbstractEnsemblistClause
 {   
     /**
      * The <code>Union</code> keyword in SQL
@@ -15,8 +15,7 @@ public class UnionClause extends AbstractClause
      */
     public UnionClause(String clause)
     {
-        super();
-        this.clause += UNION_KEYWORD + " " + clause;
+        super(UNION_KEYWORD, clause);
     }
 
     /**

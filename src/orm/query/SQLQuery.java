@@ -2,17 +2,36 @@ package orm.query;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+// ------ SQL imports
+import java.sql.Connection;
+import java.sql.PreparedStatement;
+import java.sql.ResultSet;
+import java.sql.SQLException;
 
 // personnal imports
+import orm.ORM;
+
 import orm.query.clause.AbstractClause;
+import orm.query.condition.AndCondition;
+import orm.query.condition.BetweenCondition;
+import orm.query.condition.OrCondition;
 import orm.query.clause.CrossJoinClause;
+import orm.exception.FetchingResultException;
 import orm.query.clause.FromClause;
+import orm.query.clause.GroupByClause;
 import orm.query.clause.InnerJoinClause;
-import orm.query.clause.IntersectClause;
+import orm.query.clause.ensemblist.IntersectClause;
 import orm.query.clause.LeftJoinClause;
+import orm.query.clause.ensemblist.MinusClause;
 import orm.query.clause.RightJoinClause;
-import orm.query.clause.UnionAllClause;
-import orm.query.clause.UnionClause;
+import orm.query.clause.OrderByClause;
+import orm.query.operator.SQLOperator;
+import orm.query.operator.SQLOrderOperator;
+import orm.query.result.SQLResultSet;
+import orm.query.clause.ensemblist.UnionAllClause;
+import orm.query.clause.ensemblist.UnionClause;
 import orm.query.clause.WhereClause;
 
 public class SQLQuery
@@ -50,7 +69,6 @@ public class SQLQuery
         {
             AbstractClause clause = clauses[i];
             this.clauses.add(clause);
-            this.query += clause.getClause();
         }
     }
 
@@ -65,7 +83,6 @@ public class SQLQuery
     {
         AbstractClause from = new FromClause(table);
         this.clauses.add(from);
-        this.query += " " + from.getClause();
         return this;
     }
 
@@ -82,7 +99,6 @@ public class SQLQuery
     {
         AbstractClause innerJoin = new InnerJoinClause(table, firstField, secondField);
         this.clauses.add(innerJoin);
-        this.query += " " + innerJoin.getClause();
         return this;
     }
 
@@ -97,7 +113,6 @@ public class SQLQuery
     {
         AbstractClause rightJoin = new RightJoinClause(table, firstField, secondField);
         this.clauses.add(rightJoin);
-        this.query += " " + rightJoin.getClause();
         return this;
     }
 
@@ -112,7 +127,6 @@ public class SQLQuery
     {
         AbstractClause leftJoin = new LeftJoinClause(table, firstField, secondField);
         this.clauses.add(leftJoin);
-        this.query += " " + leftJoin.getClause();
         return this;
     }
 
@@ -125,9 +139,10 @@ public class SQLQuery
     {
         AbstractClause crossJoin = new CrossJoinClause(table);
         this.clauses.add(crossJoin);
-        this.query += " " + crossJoin.getClause();
         return this;
     }
+
+    // ------------- Ensemblist SQL ------------- //
 
     /**
      * Create an union with other query
@@ -138,7 +153,6 @@ public class SQLQuery
     {
         AbstractClause union = new UnionClause(query);
         this.clauses.add(union);
-        this.query += " " + union.getClause();
         return this;
     }
 
@@ -151,7 +165,6 @@ public class SQLQuery
     {
         AbstractClause unionAll = new UnionAllClause(query);
         this.clauses.add(unionAll);
-        this.query += " " + unionAll.getClause();
         return this;
     }
 
@@ -164,7 +177,18 @@ public class SQLQuery
     {
         AbstractClause intersect = new IntersectClause(query);
         this.clauses.add(intersect);
-        this.query += " " + intersect.getClause();
+        return this;
+    }
+
+    /**
+     * Create a difference with orhter query
+     * @param query The target query
+     * @return The current SQLQuery
+     */
+    public SQLQuery minus(SQLQuery query)
+    {
+        AbstractClause minus = new MinusClause(query);
+        this.clauses.add(minus);
         return this;
     }
 
@@ -181,8 +205,159 @@ public class SQLQuery
     {
         AbstractClause where = new WhereClause(field, operator, value);
         this.clauses.add(where);
-        this.query += " " + where.getClause();
         return this;
+    }
+
+    /**
+     * Create an and condition for the query
+     * @param field The field for the condition
+     * @param operator The operator for the condition
+     * @param value The value for the condition
+     * @return The current SQLQuery
+     */
+    public SQLQuery andWhere(String field, SQLOperator operator, Object value)
+    {
+        AbstractClause andWhere = new AndCondition(field, operator, value);
+        this.clauses.add(andWhere);
+        return this;
+    }
+
+    /**
+     * Create an Or condition for the query
+     * @param field The field for the condition
+     * @param operator The operator for the condition
+     * @param value The value for the condition
+     * @return The current SQLQuery
+     */
+    public SQLQuery orWhere(String field, SQLOperator operator, Object value)
+    {
+        AbstractClause orWhere = new OrCondition(field, operator, value);
+        this.clauses.add(orWhere);
+        return this;
+    }
+
+    /**
+     * Create a between clause for the query
+     * @param field The field for the condition
+     * @param firstValue The first value of the between condition
+     * @param secondValue The second value of the between condition
+     * @return The current SQLQuery
+     */
+    public SQLQuery whereBetween(String field, Object firstValue, Object secondValue)
+    {
+        AbstractClause whereBetween = new BetweenCondition(field, firstValue, secondValue);
+        this.clauses.add(whereBetween);
+        return this;
+    }
+
+    /**
+     * Create an or between clause for the query
+     * @param field The field for the condition
+     * @param firstValue The first value of the between condition
+     * @param secondValue The second value of the between condition
+     * @return The current SQLQuery
+     */
+    public SQLQuery andWhereBetween(String field, Object firstValue, Object secondValue)
+    {
+        AbstractClause andWhereBetween = new AndCondition(new BetweenCondition(field, firstValue, secondValue));
+        this.clauses.add(andWhereBetween);
+        return this;
+    }
+
+    /**
+     * Create an or between clause for the query
+     * @param field The field for the condition
+     * @param firstValue The first value of the between condition
+     * @param secondValue The second value of the between condition
+     * @return The current SQLQuery
+     */
+    public SQLQuery orWhereBetween(String field, Object firstValue, Object secondValue)
+    {
+        AbstractClause orWhereBetween = new OrCondition(new BetweenCondition(field, firstValue, secondValue));
+        this.clauses.add(orWhereBetween);
+        return this;
+    }
+
+    // ----------- Group by methods ---------- //
+    
+    /**
+     * Create a group by clause for the query
+     * @param column The target column
+     * @return The current SQLQuery
+     */
+    public SQLQuery groupBy(String column)
+    {
+        AbstractClause groupBy = new GroupByClause(column);
+        this.clauses.add(groupBy);
+        return this;
+    }
+
+    // ----------- Order by methods ---------- //    
+
+    /**
+     * Create an order by clause for the query
+     * @param columns The columns for the order by clause
+     * @return The current SQLQuery
+     */
+    public SQLQuery orderBy(String ...columns)
+    {
+        AbstractClause orderBy = new OrderByClause(columns);
+        this.clauses.add(orderBy);
+        return this;
+    }
+
+    /**
+     * Create an order by clause for the query
+     * @param columns The columns for the order by clause
+     * @param operator The operator for the order by
+     * @return The current SQLQuery
+     */
+    public SQLQuery orderBy(SQLOrderOperator operator, String ...columns)
+    {
+        AbstractClause orderBy = new OrderByClause(operator, columns);
+        this.clauses.add(orderBy);
+        return this;
+    }
+
+    /**
+     * Create an order by clause for the query
+     * @param map A map with association between columns and operators
+     * @return The current SQLQuery
+     */
+    public SQLQuery orderBy(Map<String, SQLOrderOperator> map)
+    {
+        AbstractClause orderBy = new OrderByClause(map);
+        this.clauses.add(orderBy);
+        return this;
+    }
+
+    // ----------- Execute method ----------- //
+
+    /**
+     * Execute the current query
+     */
+    public SQLResultSet execute() throws FetchingResultException
+    {
+        Connection connection = ORM.getConnection();
+        ResultSet result;
+        PreparedStatement statement;
+        String query = this.toString();
+        SQLResultSet set = new SQLResultSet();
+
+        try {
+            statement = connection.prepareStatement(query);
+            result = statement.executeQuery();
+            while(result.next())
+            {
+                set.push(result);
+            }
+        } catch(SQLException exception) 
+        {
+            System.err.println(exception.getMessage());
+            throw new FetchingResultException("Error during fetching on the result of your query");
+        }
+
+        return set;
     }
 
     // ----------- toString methods ---------- //
@@ -193,7 +368,7 @@ public class SQLQuery
     @Override
     public String toString()
     {
-        return this.query;
+        return this.prettyToString();
     }
 
     /**

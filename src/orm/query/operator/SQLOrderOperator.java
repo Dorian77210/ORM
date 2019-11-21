@@ -1,15 +1,11 @@
-package orm.query;
+package orm.query.operator;
 
-public enum SQLOperator {
-    EQUAL("="),
-    NOY_EQUAL("<>"),
-    GREATER_THAN(">"),
-    LESS_THAN("<"),
-    GREATER_EQUAL_THAN(">="),
-    LESS_EQUAL_THAN("<=");
+public enum SQLOrderOperator {
+    DESC("DESC"),
+    ASC("ASC");
 
     public final String label;
-    private SQLOperator(String label)
+    private SQLOrderOperator(String label)
     {
         this.label = label;
     }

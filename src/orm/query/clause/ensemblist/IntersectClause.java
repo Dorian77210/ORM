@@ -1,8 +1,8 @@
-package orm.query.clause;
+package orm.query.clause.ensemblist;
 
 import orm.query.SQLQuery;
 
-public class IntersectClause extends AbstractClause
+public class IntersectClause extends AbstractEnsemblistClause
 {
     /**
      * The <code>Intersect</code> keyword in SQL
@@ -15,8 +15,7 @@ public class IntersectClause extends AbstractClause
      */
     public IntersectClause(String clause)
     {
-        super();
-        this.clause += INTERSECT_KEYWORD + " " + clause;
+        super(INTERSECT_KEYWORD, clause);
     }
 
     /**

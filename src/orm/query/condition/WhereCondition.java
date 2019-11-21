@@ -1,8 +1,8 @@
 package orm.query.condition;
 
-import orm.query.SQLOperator;
+import orm.query.operator.SQLOperator;
 
-public class WhereCondition implements AbstractCondition
+public class WhereCondition
 {   
     /**
      * The target field of the condition
@@ -89,11 +89,5 @@ public class WhereCondition implements AbstractCondition
     public void setValue(Object value)
     {
         this.value = new StringBuffer().append(value).toString();
-    }
-
-    @Override
-    public String getCondition()
-    {
-        return this.field + " " + this.operator + " " + this.value;
     }
 }
