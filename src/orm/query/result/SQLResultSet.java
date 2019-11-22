@@ -57,7 +57,6 @@ public class SQLResultSet
             for(i = 1; i <= count;i ++)
             {
                 String columnName = data.getColumnLabel(i);
-                System.out.println(columnName);
                 String tableName = data.getTableName(i);
                 String columnValue = set.getString(i);
                 json.put(new JSONObject()

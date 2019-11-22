@@ -10,5 +10,5 @@ import java.lang.annotation.RetentionPolicy;
 public @interface RefersToField
 {
     public String tableField();
-    public Class<?> type();
+    public String type();
 }

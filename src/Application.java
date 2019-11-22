@@ -5,6 +5,7 @@ import orm.query.result.SQLResultSet;
 
 import orm.model.SampleModel;
 
+import orm.collection.SQLCollection;
 public class Application {
 
     public static void main(String[] args) {
@@ -15,7 +16,9 @@ public class Application {
                 System.out.println("Connected to the database");
                 try {
                     SQLResultSet result = ORM.select("*").from("User").execute();
-                    result.build(SampleModel.class);
+                    System.out.print(result.getResult());
+                    SQLCollection<SampleModel> c = result.build(SampleModel.class);
+                    System.out.println(c.first());
                 } catch(Exception e)
                 {
                     System.out.println(e.getMessage());
