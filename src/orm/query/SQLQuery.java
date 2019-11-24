@@ -17,15 +17,16 @@ import orm.query.clause.AbstractClause;
 import orm.query.condition.AndCondition;
 import orm.query.condition.BetweenCondition;
 import orm.query.condition.OrCondition;
-import orm.query.clause.CrossJoinClause;
+import orm.query.clause.jointures.CrossJoinClause;
 import orm.exception.FetchingResultException;
 import orm.query.clause.FromClause;
 import orm.query.clause.GroupByClause;
-import orm.query.clause.InnerJoinClause;
+import orm.query.clause.jointures.InnerJoinClause;
 import orm.query.clause.ensemblist.IntersectClause;
-import orm.query.clause.LeftJoinClause;
+import orm.query.clause.jointures.LeftJoinClause;
 import orm.query.clause.ensemblist.MinusClause;
-import orm.query.clause.RightJoinClause;
+import orm.query.clause.jointures.RightJoinClause;
+import orm.query.clause.jointures.NaturalJoinClause;
 import orm.query.clause.OrderByClause;
 import orm.query.operator.SQLOperator;
 import orm.query.operator.SQLOrderOperator;
@@ -141,6 +142,18 @@ public class SQLQuery
     {
         AbstractClause crossJoin = new CrossJoinClause(table);
         this.clauses.add(crossJoin);
+        return this;
+    }
+    
+    /**
+     * Create a natural jointure
+     * @param table The target table for the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery naturalJoin(String table)
+    {
+        AbstractClause naturalJoin = new NaturalJoinClause(table);
+        this.clauses.add(naturalJoin);
         return this;
     }
 
