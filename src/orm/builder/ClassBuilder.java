@@ -6,6 +6,7 @@ import orm.query.result.SQLResultSet;
 import orm.annotation.RefersToTable;
 import orm.annotation.RefersToField;
 import orm.exception.BuildingObjectException;
+import orm.model.BaseModel;
 
 import orm.types.SQLAbstractType;
 
@@ -26,7 +27,7 @@ public class ClassBuilder implements IClassBuilder
      * 
      * @return A collection with objects a the class <code>clazz</code>
      */
-    public <T> SQLCollection<T> build(Class<T> clazz, SQLResultSet set) throws BuildingObjectException 
+    public <T extends BaseModel> SQLCollection<T> build(Class<T> clazz, SQLResultSet set) throws BuildingObjectException 
     {
         SQLCollection<T> collection = new SQLCollection<T>();
         JSONArray data = set.getResult();

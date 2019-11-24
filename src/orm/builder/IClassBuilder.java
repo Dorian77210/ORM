@@ -2,8 +2,9 @@ package orm.builder;
 
 import orm.collection.SQLCollection;
 import orm.query.result.SQLResultSet;
+import orm.model.BaseModel;
 
 public interface IClassBuilder
 {
-    <T> SQLCollection<T> build(Class<T> clazz, SQLResultSet set);
+    <T extends BaseModel> SQLCollection<T> build(Class<T> clazz, SQLResultSet set);
 }

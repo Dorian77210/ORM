@@ -1,6 +1,5 @@
 package orm.query;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -37,17 +36,12 @@ import orm.query.clause.WhereClause;
 import orm.query.clause.LimitClause;
 import orm.query.clause.OffsetClause;
 
-public class SQLQuery
+public class SQLQuery extends AbstractSQLQuery
 {
     /**
      * List of all of the clauses that composed the SQL query
      */
     private List<AbstractClause> clauses;
-
-    /**
-     * The current query in string
-     */
-    private String query;
 
     // -------- Constructors ------- //
 
@@ -56,8 +50,7 @@ public class SQLQuery
      */
     public SQLQuery()
     {
-        this.clauses = new ArrayList<AbstractClause>();
-        this.query = "";
+        super();
     }
 
     /**
@@ -66,13 +59,7 @@ public class SQLQuery
      */
     public SQLQuery(AbstractClause ...clauses)
     {
-        this();
-        int i;
-        for(i = 0; i < clauses.length; i++)
-        {
-            AbstractClause clause = clauses[i];
-            this.clauses.add(clause);
-        }
+        super(clauses);
     }
 
     // ---------- From method -------- //
