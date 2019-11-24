@@ -11,7 +11,12 @@ public class SQLCollection<T> extends ArrayList<T>
     {
         super();
     }
-    
+
+    /**
+     * Get the first element in the collection
+     * @return The first element
+     * @throws IndexOutOfBoundsException if the size is equal to 0
+     */
     public T first()
     {
         if(this.size() == 0)
@@ -20,5 +25,15 @@ public class SQLCollection<T> extends ArrayList<T>
         }
 
         return this.get(0);
+    }
+
+    /**
+     * Print the collection 
+     */
+    public void dump()
+    {
+        this.forEach((T element) -> {
+            System.out.println(element);
+        });
     }
 }

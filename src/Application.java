@@ -13,12 +13,14 @@ public class Application {
         {
             if(ORM.connect("./config.json"))
             {
-                System.out.println("Connected to the database");
                 try {
-                    SQLResultSet result = ORM.select("*").from("User").execute();
-                    System.out.print(result.getResult());
+                    SQLQuery query = ORM.select("*").
+                        from("User")
+                        .limit(2)
+                        .offset(1);
+                    SQLResultSet result = query.execute();
                     SQLCollection<SampleModel> c = result.build(SampleModel.class);
-                    System.out.println(c.first());
+                    c.dump();
                 } catch(Exception e)
                 {
                     System.out.println(e.getMessage());

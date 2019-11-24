@@ -1,11 +1,13 @@
 package orm.builder;
 
-// imports imports
+// local imports
 import orm.collection.SQLCollection;
 import orm.query.result.SQLResultSet;
 import orm.annotation.RefersToTable;
 import orm.annotation.RefersToField;
 import orm.exception.BuildingObjectException;
+
+import orm.types.SQLAbstractType;
 
 import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
@@ -79,14 +81,13 @@ public class ClassBuilder implements IClassBuilder
                             Constructor<?> constructor = null;
                             Class<?> fieldType;
                             String className = annotation.type();
-                            
                             // retrieve the constructor of the type field with String parameter
                             try {
                                 fieldType = Class.forName(className);
                                 constructor = fieldType.getConstructor(String.class);
                                 // replace by custom types
-                                Object value = constructor.newInstance(columnValue);
-                                field.set(element, value);
+                                SQLAbstractType value = (SQLAbstractType)constructor.newInstance(columnValue);
+                                field.set(element, value.getData());
                             } catch(NoSuchMethodException noSuchMethodException)
                             {
                                 throw new BuildingObjectException(noSuchMethodException.getMessage());
@@ -109,13 +110,11 @@ public class ClassBuilder implements IClassBuilder
                             {
                                 throw new BuildingObjectException(invocationTargetException.getMessage());
                             }
-
-                            // create a new object for the field
                         }
                     }
-
-                    collection.add(element);
                 }
+                
+                collection.add(element);
             }
         }
 

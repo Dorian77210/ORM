@@ -33,6 +33,8 @@ import orm.query.result.SQLResultSet;
 import orm.query.clause.ensemblist.UnionAllClause;
 import orm.query.clause.ensemblist.UnionClause;
 import orm.query.clause.WhereClause;
+import orm.query.clause.LimitClause;
+import orm.query.clause.OffsetClause;
 
 public class SQLQuery
 {
@@ -328,6 +330,32 @@ public class SQLQuery
     {
         AbstractClause orderBy = new OrderByClause(map);
         this.clauses.add(orderBy);
+        return this;
+    }
+
+    // ----------- Limit / Offset methods ---------- //
+
+    /**
+     * Create a limit clause for the query
+     * @param limit The wanted limit
+     * @return The current query
+     */
+    public SQLQuery limit(int limit)
+    {
+        AbstractClause limitClause = new LimitClause(limit);
+        this.clauses.add(limitClause);
+        return this;
+    }
+
+    /**
+     * Create an offset clause for the query
+     * @param offset The wanted offset
+     * @return The current query
+     */
+    public SQLQuery offset(int offset)
+    {
+        AbstractClause offsetClause = new OffsetClause(offset);
+        this.clauses.add(offsetClause);
         return this;
     }
 

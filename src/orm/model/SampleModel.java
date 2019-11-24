@@ -6,10 +6,10 @@ import orm.annotation.RefersToTable;
 @RefersToTable(table = "User")
 public class SampleModel extends BaseModel
 {
-    @RefersToField(tableField = "id", type = "java.lang.Integer")
+    @RefersToField(tableField = "id", type = "orm.types.SQLInteger")
     private int id;
 
-    @RefersToField(tableField = "name", type = "java.lang.String")
+    @RefersToField(tableField = "name", type = "orm.types.SQLString")
     private String name;
     
     @Override
