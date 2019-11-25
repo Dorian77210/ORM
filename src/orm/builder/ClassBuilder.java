@@ -27,7 +27,7 @@ public class ClassBuilder implements IClassBuilder
      * 
      * @return A collection with objects a the class <code>clazz</code>
      */
-    public <T extends BaseModel> SQLCollection<T> build(Class<T> clazz, SQLResultSet set) throws BuildingObjectException 
+    public <T extends BaseModel> SQLCollection<T> build(Class<T> clazz, SQLResultSet set) throws BuildingObjectException
     {
         SQLCollection<T> collection = new SQLCollection<T>();
         JSONArray data = set.getResult();

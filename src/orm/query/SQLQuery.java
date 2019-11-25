@@ -8,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 // personnal imports
 import orm.ORM;
@@ -34,14 +35,11 @@ import orm.query.clause.ensemblist.UnionAllClause;
 import orm.query.clause.ensemblist.UnionClause;
 import orm.query.clause.WhereClause;
 import orm.query.clause.LimitClause;
+import orm.query.clause.ValuesClause;
 import orm.query.clause.OffsetClause;
 
 public class SQLQuery extends AbstractSQLQuery
 {
-    /**
-     * List of all of the clauses that composed the SQL query
-     */
-    private List<AbstractClause> clauses;
 
     // -------- Constructors ------- //
 
@@ -142,6 +140,34 @@ public class SQLQuery extends AbstractSQLQuery
         AbstractClause naturalJoin = new NaturalJoinClause(table);
         this.clauses.add(naturalJoin);
         return this;
+    }
+
+    // ------------ Update methods ---------- //
+
+    /**
+     * Bind values for the insert clause
+     * @param values The values for the insertion
+     * @return The current SQLQuery
+     */
+    public SQLQuery values(Object... values)
+    {
+        AbstractClause valuesClause = new ValuesClause(this.containsValues, values);
+        if(!this.containsValues)
+        {
+            this.containsValues = true;
+        }
+        this.clauses.add(valuesClause);
+        return this;
+    }
+
+    /**
+     * Bind values for the insert clause
+     * @param values The values for the insertion
+     * @return The current SQLQuery
+     */
+    public SQLQuery values(List<Object> values)
+    {
+        return this.values(values.toArray());
     }
 
     // ------------- Ensemblist SQL ------------- //
@@ -359,12 +385,14 @@ public class SQLQuery extends AbstractSQLQuery
         return this;
     }
 
-    // ----------- Execute method ----------- //
+    
+
+    // ----------- Execute methods ----------- //
 
     /**
      * Execute the current query
      */
-    public SQLResultSet execute() throws FetchingResultException
+    public SQLResultSet executeQuery() throws FetchingResultException
     {
         Connection connection = ORM.getConnection();
         ResultSet result;
@@ -389,6 +417,27 @@ public class SQLQuery extends AbstractSQLQuery
         }
 
         return set;
+    }
+
+    /**
+     * Execute an update in the database
+     * @return <code>true</code> if the update is a success, else <code>false</code>
+     */
+    public ResultSet executeUpdate()
+    {
+        Connection connection = ORM.getConnection();
+        PreparedStatement statement;
+        String query = this.toString();
+
+        try {
+            statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement.executeUpdate();
+            return statement.getGeneratedKeys();
+        } catch(SQLException exception)
+        {
+            System.err.println(exception.getMessage());
+            return null;
+        }
     }
 
     // ----------- toString methods ---------- //

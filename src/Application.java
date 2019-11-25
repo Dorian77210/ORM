@@ -13,28 +13,8 @@ public class Application {
         {
             if(ORM.connect("./config.json"))
             {
-                // try {
-                //     SQLQuery query = ORM.select("*").
-                //         from("User")
-                //         .limit(2)
-                //         .offset(1);
-                //     SQLResultSet result = query.execute();
-                //     SQLCollection<SampleModel> c = result.build(SampleModel.class);
-                //     c.dump();
-                // } catch(Exception e)
-                // {
-                //     System.out.println(e.getMessage());
-                // }
-
-                try {
-                    SQLQuery query = ORM.all("User");
-                    SQLResultSet result = query.execute();
-                    SQLCollection<SampleModel> c = result.build(SampleModel.class);
-                    c.dump();
-                } catch(Exception e)
-                {
-                    System.out.println(e.getMessage());
-                }
+                SampleModel model = new SampleModel();
+                model.save();
             }
         }
     }

@@ -7,7 +7,10 @@ package orm.query.clause;
  */
 
 public abstract class AbstractClause
-{
+{   
+    /**
+     * The current clause in String
+     */
     protected String clause;
 
     /**

@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 
 import orm.collection.SQLCollection;
+import orm.model.BaseModel;
 import orm.builder.IClassBuilder;
 import orm.builder.ClassBuilder;
 
@@ -76,7 +77,7 @@ public class SQLResultSet
         return true;
     }
 
-    public <T> SQLCollection<T> build(Class<T> clazz)
+    public <T extends BaseModel> SQLCollection<T> build(Class<T> clazz)
     {
         IClassBuilder builder = new ClassBuilder();
         return builder.build(clazz, this);

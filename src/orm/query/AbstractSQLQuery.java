@@ -15,10 +15,16 @@ public abstract class AbstractSQLQuery
     protected List<AbstractClause> clauses;
 
     /**
+     * Boolean that permit to know if the query (Update/Insert) has got values
+     */
+    protected boolean containsValues;
+
+    /**
      * Constructor of the AbstractSQLQuery
      */
     public AbstractSQLQuery()
     {
+        this.containsValues = false;
         this.clauses = new ArrayList<AbstractClause>();
     }
 
