@@ -1,6 +1,5 @@
 package orm.query;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -9,6 +8,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 
 // personnal imports
 import orm.ORM;
@@ -17,15 +17,16 @@ import orm.query.clause.AbstractClause;
 import orm.query.condition.AndCondition;
 import orm.query.condition.BetweenCondition;
 import orm.query.condition.OrCondition;
-import orm.query.clause.CrossJoinClause;
+import orm.query.clause.jointures.CrossJoinClause;
 import orm.exception.FetchingResultException;
 import orm.query.clause.FromClause;
 import orm.query.clause.GroupByClause;
-import orm.query.clause.InnerJoinClause;
+import orm.query.clause.jointures.InnerJoinClause;
 import orm.query.clause.ensemblist.IntersectClause;
-import orm.query.clause.LeftJoinClause;
+import orm.query.clause.jointures.LeftJoinClause;
 import orm.query.clause.ensemblist.MinusClause;
-import orm.query.clause.RightJoinClause;
+import orm.query.clause.jointures.RightJoinClause;
+import orm.query.clause.jointures.NaturalJoinClause;
 import orm.query.clause.OrderByClause;
 import orm.query.operator.SQLOperator;
 import orm.query.operator.SQLOrderOperator;
@@ -33,18 +34,12 @@ import orm.query.result.SQLResultSet;
 import orm.query.clause.ensemblist.UnionAllClause;
 import orm.query.clause.ensemblist.UnionClause;
 import orm.query.clause.WhereClause;
+import orm.query.clause.LimitClause;
+import orm.query.clause.ValuesClause;
+import orm.query.clause.OffsetClause;
 
-public class SQLQuery
+public class SQLQuery extends AbstractSQLQuery
 {
-    /**
-     * List of all of the clauses that composed the SQL query
-     */
-    private List<AbstractClause> clauses;
-
-    /**
-     * The current query in string
-     */
-    private String query;
 
     // -------- Constructors ------- //
 
@@ -53,8 +48,7 @@ public class SQLQuery
      */
     public SQLQuery()
     {
-        this.clauses = new ArrayList<AbstractClause>();
-        this.query = "";
+        super();
     }
 
     /**
@@ -63,13 +57,7 @@ public class SQLQuery
      */
     public SQLQuery(AbstractClause ...clauses)
     {
-        this();
-        int i;
-        for(i = 0; i < clauses.length; i++)
-        {
-            AbstractClause clause = clauses[i];
-            this.clauses.add(clause);
-        }
+        super(clauses);
     }
 
     // ---------- From method -------- //
@@ -140,6 +128,46 @@ public class SQLQuery
         AbstractClause crossJoin = new CrossJoinClause(table);
         this.clauses.add(crossJoin);
         return this;
+    }
+    
+    /**
+     * Create a natural jointure
+     * @param table The target table for the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery naturalJoin(String table)
+    {
+        AbstractClause naturalJoin = new NaturalJoinClause(table);
+        this.clauses.add(naturalJoin);
+        return this;
+    }
+
+    // ------------ Update methods ---------- //
+
+    /**
+     * Bind values for the insert clause
+     * @param values The values for the insertion
+     * @return The current SQLQuery
+     */
+    public SQLQuery values(Object... values)
+    {
+        AbstractClause valuesClause = new ValuesClause(this.containsValues, values);
+        if(!this.containsValues)
+        {
+            this.containsValues = true;
+        }
+        this.clauses.add(valuesClause);
+        return this;
+    }
+
+    /**
+     * Bind values for the insert clause
+     * @param values The values for the insertion
+     * @return The current SQLQuery
+     */
+    public SQLQuery values(List<Object> values)
+    {
+        return this.values(values.toArray());
     }
 
     // ------------- Ensemblist SQL ------------- //
@@ -331,12 +359,40 @@ public class SQLQuery
         return this;
     }
 
-    // ----------- Execute method ----------- //
+    // ----------- Limit / Offset methods ---------- //
+
+    /**
+     * Create a limit clause for the query
+     * @param limit The wanted limit
+     * @return The current query
+     */
+    public SQLQuery limit(int limit)
+    {
+        AbstractClause limitClause = new LimitClause(limit);
+        this.clauses.add(limitClause);
+        return this;
+    }
+
+    /**
+     * Create an offset clause for the query
+     * @param offset The wanted offset
+     * @return The current query
+     */
+    public SQLQuery offset(int offset)
+    {
+        AbstractClause offsetClause = new OffsetClause(offset);
+        this.clauses.add(offsetClause);
+        return this;
+    }
+
+    
+
+    // ----------- Execute methods ----------- //
 
     /**
      * Execute the current query
      */
-    public SQLResultSet execute() throws FetchingResultException
+    public SQLResultSet executeQuery() throws FetchingResultException
     {
         Connection connection = ORM.getConnection();
         ResultSet result;
@@ -349,7 +405,10 @@ public class SQLQuery
             result = statement.executeQuery();
             while(result.next())
             {
-                set.push(result);
+                if(!set.push(result))
+                {
+                    throw new FetchingResultException("Error during fetching on the result of your query");
+                }
             }
         } catch(SQLException exception) 
         {
@@ -358,6 +417,27 @@ public class SQLQuery
         }
 
         return set;
+    }
+
+    /**
+     * Execute an update in the database
+     * @return <code>true</code> if the update is a success, else <code>false</code>
+     */
+    public ResultSet executeUpdate()
+    {
+        Connection connection = ORM.getConnection();
+        PreparedStatement statement;
+        String query = this.toString();
+
+        try {
+            statement = connection.prepareStatement(query, Statement.RETURN_GENERATED_KEYS);
+            statement.executeUpdate();
+            return statement.getGeneratedKeys();
+        } catch(SQLException exception)
+        {
+            System.err.println(exception.getMessage());
+            return null;
+        }
     }
 
     // ----------- toString methods ---------- //

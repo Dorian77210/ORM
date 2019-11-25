@@ -18,6 +18,8 @@ import json.JSONReader;
 import orm.query.SQLQuery;
 import orm.query.clause.AbstractClause;
 import orm.query.clause.SelectClause;
+import orm.query.clause.FromClause;
+import orm.query.clause.InsertIntoClause;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -234,5 +236,42 @@ public class ORM
     {
         AbstractClause select = new SelectClause(listFields);
         return new SQLQuery(select);
+    }
+
+
+    // ----------- Insert method --------- //
+
+    /**
+     * Create an insert clause for the current query
+     * @param table The target table for the insertion
+     * @return The current SQLQuery
+     */
+    public static SQLQuery insertInto(String table, String... columns)
+    {
+        return new SQLQuery(new InsertIntoClause(table, columns));
+    }
+
+    /**
+     * Create an insert clause for the current query
+     * @param table The target table for the insertion
+     * @param columns The current SQLQuery
+     * @return
+     */
+    public static SQLQuery insertInto(String table, List<String> columns)
+    {
+        return new SQLQuery(new InsertIntoClause(table, columns));
+    }
+
+
+    // ------------ All method -------- //
+
+    /**
+     * Select all of the fields of a table
+     * @param table The target table
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery all(String table)
+    {
+        return new SQLQuery(new SelectClause("*"), new FromClause(table));
     }
 }

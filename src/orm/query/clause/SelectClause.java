@@ -1,5 +1,8 @@
 package orm.query.clause;
 
+// local imports
+import orm.query.operator.SQLSelectOperator;
+
 import java.util.List;
 
 public class SelectClause extends AbstractClause
@@ -16,7 +19,7 @@ public class SelectClause extends AbstractClause
     public SelectClause(String field)
     {
         super();
-        this.clause += SELECT_KEYWORD + " " + field;
+        this.clause += SELECT_KEYWORD + " " + SQLSelectOperator.DISTINCT + " " + field;
     }
 
     /**

@@ -1,4 +1,4 @@
-package orm.query.clause;
+package orm.query.clause.jointures;
 
 public class LeftJoinClause extends AbstractJoinClause
 {

@@ -25,9 +25,11 @@ public class WhereClause extends AbstractClause
             .append(field)
             .append(" ")
             .append(operator)
-            .append(" ")
-            .append(new StringBuilder().append(value).toString());
-        
+            .append(" '")
+            .append(new StringBuilder().append(value)
+            .append("'")
+            .toString());
+
         this.clause = buffer.toString();
     }
 

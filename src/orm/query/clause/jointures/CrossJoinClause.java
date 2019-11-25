@@ -1,4 +1,6 @@
-package orm.query.clause;
+package orm.query.clause.jointures;
+
+import orm.query.clause.AbstractClause;
 
 public class CrossJoinClause extends AbstractClause
 {

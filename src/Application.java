@@ -1,7 +1,11 @@
 import orm.ORM;
 import orm.query.operator.SQLOperator;
 import orm.query.SQLQuery;
+import orm.query.result.SQLResultSet;
 
+import orm.model.SampleModel;
+
+import orm.collection.SQLCollection;
 public class Application {
 
     public static void main(String[] args) {
@@ -9,13 +13,8 @@ public class Application {
         {
             if(ORM.connect("./config.json"))
             {
-                System.out.println("Connected to the database");
-                try {
-                    ORM.select("*").from("User").execute();
-                } catch(Exception e)
-                {
-                    System.out.println(e.getMessage());
-                }
+                SampleModel model = new SampleModel();
+                model.save();
             }
         }
     }
