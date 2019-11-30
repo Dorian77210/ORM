@@ -1,11 +1,21 @@
 package orm.query.condition;
 
+import orm.query.SQLQuery;
 import orm.query.clause.AbstractClause;
 
 import orm.query.operator.SQLOperator;
 
 public class AbstractCondition extends AbstractClause
 {   
+
+    /**
+     * Constructor by default
+     */
+    public AbstractCondition()
+    {
+        super();
+    }
+
     /**
      * Constructor of AbstractCondition
      * @param field The target field of the condition
@@ -24,6 +34,29 @@ public class AbstractCondition extends AbstractClause
             .append(operator)
             .append(" ")
             .append(new StringBuffer().append(value).toString());
+
+        this.clause += buffer.toString();
+    }
+
+    /**
+     * Constructor of AbstractCondition
+     * @param field The target field of the condition
+     * @param operator The SQL operator for the condition
+     * @param query The target query value
+     * @param conditionType The type of the condition
+     */
+    public AbstractCondition(String field, SQLOperator operator, SQLQuery query, String conditionType)
+    {
+        super();
+        StringBuffer buffer = new StringBuffer()
+            .append(conditionType)
+            .append(" ")
+            .append(field)
+            .append(" ")
+            .append(operator)
+            .append(" (")
+            .append(query)
+            .append(" )");
 
         this.clause += buffer.toString();
     }

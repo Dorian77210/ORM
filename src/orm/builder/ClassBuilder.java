@@ -114,6 +114,8 @@ public class ClassBuilder implements IClassBuilder
                         }
                     }
                 }
+
+                element.setState(BaseModel.ModelState.INSERTED);
                 
                 collection.add(element);
             }
