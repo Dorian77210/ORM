@@ -241,6 +241,47 @@ public class BaseModel
     }
 
     /**
+     * Delete the model in the database
+     * @return <code>true</code> if the deletion was a success, <code>false</code> else
+     */
+    public boolean delete()
+    {
+        String table = this.databaseRepresentation.getString(TABLE_JSON_KEY);
+        String primaryKey = this.databaseRepresentation.getString(PRIMARY_KEY_FIELD_JSON_KEY);
+        String primaryKeyColumn = this.databaseRepresentation.getString(PRIMARY_KEY_COLUMN_JSON_KEY);
+        Field primaryKeyField = null;
+        SQLQuery query = null;
+
+        try {
+            Class<?> currentClass = this.getClass();
+            primaryKeyField = currentClass.getDeclaredField(primaryKey);
+            primaryKeyField.setAccessible(true);
+            Object value = primaryKeyField.get(this);
+
+            query = ORM.deleteFrom(table).where(primaryKeyColumn, SQLOperator.EQUAL, value);
+        } catch(SecurityException securityException)
+        {
+            System.err.println(securityException.getMessage());
+            return false;
+        } catch(NoSuchFieldException noSuchFieldException)
+        {
+            System.err.println(noSuchFieldException.getMessage());
+            return false;
+        } catch(IllegalAccessException illegalAccessException)
+        {
+            System.err.println(illegalAccessException.getMessage());
+            return false;
+        }
+
+        if(query.executeUpdate() == null)
+        {
+            return false;
+        }
+
+        return true;
+    }
+
+    /**
      * Set a new state for the model
      * @param state The new state
      */
