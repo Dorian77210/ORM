@@ -2,7 +2,7 @@ package orm.query.condition;
 
 import orm.query.clause.AbstractClause;
 
-public class BetweenCondition extends AbstractClause
+public class BetweenCondition extends AbstractCondition
 {
     /**
      * The <code>Between</code> keyword in SQL

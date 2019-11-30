@@ -20,6 +20,11 @@ public class SampleModel extends BaseModel
         this.name = "Test";
     }
 
+    public void setName(String name)
+    {
+        this.name = name;
+    }
+
     @Override
     public String toString()
     {

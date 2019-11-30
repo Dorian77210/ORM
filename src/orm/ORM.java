@@ -20,6 +20,7 @@ import orm.query.clause.AbstractClause;
 import orm.query.clause.SelectClause;
 import orm.query.clause.FromClause;
 import orm.query.clause.InsertIntoClause;
+import orm.query.clause.UpdateClause;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -255,13 +256,22 @@ public class ORM
      * Create an insert clause for the current query
      * @param table The target table for the insertion
      * @param columns The current SQLQuery
-     * @return
+     * @return A new SQLQuery
      */
     public static SQLQuery insertInto(String table, List<String> columns)
     {
         return new SQLQuery(new InsertIntoClause(table, columns));
     }
 
+    /**
+     * Create an update clause for the current query
+     * @param table The target table for the update
+     * @return A new SQLQuery
+     */
+    public static SQLQuery update(String table)
+    {
+        return new SQLQuery(new UpdateClause(table));
+    }
 
     // ------------ All method -------- //
 

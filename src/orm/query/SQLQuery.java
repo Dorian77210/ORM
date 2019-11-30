@@ -37,6 +37,8 @@ import orm.query.clause.WhereClause;
 import orm.query.clause.LimitClause;
 import orm.query.clause.ValuesClause;
 import orm.query.clause.OffsetClause;
+import orm.query.clause.ExistsClause;
+import orm.query.clause.SetClause;
 
 public class SQLQuery extends AbstractSQLQuery
 {
@@ -156,6 +158,7 @@ public class SQLQuery extends AbstractSQLQuery
         {
             this.containsValues = true;
         }
+
         this.clauses.add(valuesClause);
         return this;
     }
@@ -168,6 +171,24 @@ public class SQLQuery extends AbstractSQLQuery
     public SQLQuery values(List<Object> values)
     {
         return this.values(values.toArray());
+    }
+
+    /**
+     * Set a value for an update
+     * @param field The field to update
+     * @param value The value for the update
+     * @return The current SQLQuery
+     */
+    public SQLQuery setValue(String field, Object value)
+    {
+        AbstractClause setClause = new SetClause(this.containsValues, field, value);
+        if(!this.containsValues)
+        {
+            this.containsValues = true;
+        }
+
+        this.clauses.add(setClause);
+        return this;
     }
 
     // ------------- Ensemblist SQL ------------- //
@@ -237,6 +258,20 @@ public class SQLQuery extends AbstractSQLQuery
     }
 
     /**
+     * Create a where clause
+     * @param field The field for the condition
+     * @param operator The operator for the condition
+     * @param query The target query for the condition
+     * @return The current SQLQUery
+     */
+    public SQLQuery where(String field, SQLOperator operator, SQLQuery query)
+    {
+        AbstractClause whereClause = new WhereClause(field, operator, query);
+        this.clauses.add(whereClause);
+        return this;
+    }
+
+    /**
      * Create an and condition for the query
      * @param field The field for the condition
      * @param operator The operator for the condition
@@ -251,6 +286,20 @@ public class SQLQuery extends AbstractSQLQuery
     }
 
     /**
+     * Create an and condition for the query
+     * @param field The field for the condition
+     * @param operator The SQL operator for the condition
+     * @param query The target query 
+     * @return The current SQLQuery
+     */
+    public SQLQuery andWhere(String field, SQLOperator operator, SQLQuery query)
+    {
+        AbstractClause andWhere = new AndCondition(field, operator, query);
+        this.clauses.add(andWhere);
+        return this;
+    }
+
+    /**
      * Create an Or condition for the query
      * @param field The field for the condition
      * @param operator The operator for the condition
@@ -260,6 +309,20 @@ public class SQLQuery extends AbstractSQLQuery
     public SQLQuery orWhere(String field, SQLOperator operator, Object value)
     {
         AbstractClause orWhere = new OrCondition(field, operator, value);
+        this.clauses.add(orWhere);
+        return this;
+    }
+
+    /**
+     * Create an Or condition for the query
+     * @param field The field for the condition
+     * @param operator The SQL operator for the condition
+     * @param query The target query
+     * @return The current SQLQuery
+     */
+    public SQLQuery orWhere(String field, SQLOperator operator, SQLQuery query)
+    {
+        AbstractClause orWhere = new OrCondition(field, operator, query);
         this.clauses.add(orWhere);
         return this;
     }
@@ -317,6 +380,44 @@ public class SQLQuery extends AbstractSQLQuery
     {
         AbstractClause groupBy = new GroupByClause(column);
         this.clauses.add(groupBy);
+        return this;
+    }
+
+    // ----------- Exist methods --------- //
+
+    /**
+     * Create an exists clause for the query
+     * @param query The target query of exist's clause
+     * @return The current SQLQuery
+     */
+    public SQLQuery whereExists(SQLQuery query)
+    {
+        AbstractClause existsClause = new ExistsClause(query);
+        this.clauses.add(existsClause);
+        return this;
+    }
+
+    /**
+     * Create an And Exists clause for the query
+     * @param query The target query
+     * @return The current SQLQuery
+     */
+    public SQLQuery andExists(SQLQuery query)
+    {
+        AbstractClause andExists = new AndCondition(new ExistsClause(query));
+        this.clauses.add(andExists);
+        return this;
+    }
+
+    /**
+     * Create an Or Exists clause for the query
+     * @param query The target query
+     * @return The current SQLQuer
+     */
+    public SQLQuery orExists(SQLQuery query)
+    {
+        AbstractClause orExists = new OrCondition(new ExistsClause(query));
+        this.clauses.add(orExists);
         return this;
     }
 
