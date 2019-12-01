@@ -21,6 +21,7 @@ import orm.query.clause.SelectClause;
 import orm.query.clause.FromClause;
 import orm.query.clause.InsertIntoClause;
 import orm.query.clause.UpdateClause;
+import orm.query.clause.DeleteClause;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -240,7 +241,7 @@ public class ORM
     }
 
 
-    // ----------- Insert method --------- //
+    // ----------- Insert/Update methods --------- //
 
     /**
      * Create an insert clause for the current query
@@ -271,6 +272,16 @@ public class ORM
     public static SQLQuery update(String table)
     {
         return new SQLQuery(new UpdateClause(table));
+    }
+
+    /**
+     * Create a delete clause for the current query
+     * @param table The target table for the delete
+     * @return A new SQLQuery
+     */
+    public static SQLQuery deleteFrom(String table)
+    {
+        return new SQLQuery(new DeleteClause(table));
     }
 
     // ------------ All method -------- //

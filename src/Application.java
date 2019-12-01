@@ -16,9 +16,7 @@ public class Application {
                 try {
                     SQLResultSet set = ORM.select("*").from("User").where("id", SQLOperator.EQUAL, 39).executeQuery();
                     SampleModel model = set.build(SampleModel.class).first();
-                    System.out.println(model);
-                    model.name = "Update";
-                    model.save();
+                    model.delete();
                 } catch(Exception e)
                 {
                     System.err.println(e);
