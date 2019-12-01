@@ -13,6 +13,9 @@ public enum SQLTableType {
     UNSIGNED_SMALLINT("SMALLINT UNSIGNED"),
     SMALLINT_ZERO_FILL("SMALLINT ZEROFILL"),
 
+    MEDIUM_INT("MEDIUMINT"),
+    UNSIGNED_MEDIUM_INT("MEDIUMINT UNSIGNED"),
+
     INT("INT"),
     UNSIGNED_INT("INT UNSIGNED"),
     INT_ZERO_FILL("INT ZEROFILL"),
@@ -63,9 +66,7 @@ public enum SQLTableType {
     TIME("TIME"),
     DATETIME("DATETIME"),
     TIMESTAMP("TIMESTAMP"),
-    YEAR("YEAR"),
-    
-    ;
+    YEAR("YEAR");
 
     public final String label;
     private SQLTableType(String label)

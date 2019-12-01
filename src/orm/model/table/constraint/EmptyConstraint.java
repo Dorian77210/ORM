@@ -1,6 +1,6 @@
 package orm.model.table.constraint;
 
-public class EmptyConstraint implements BaseConstraint
+public class EmptyConstraint extends BaseConstraint
 {
 
     /**
