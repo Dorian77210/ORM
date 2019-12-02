@@ -9,6 +9,10 @@ import java.util.ArrayList;
 
 public class SQLTable
 {
+    /**
+     * The <code>Create Table</code> keyword in SQL
+     */
+    private static final String CREATE_TABLE_KEYWORD = "CREATE TABLE";
 
     /**
      * The name of the table
@@ -394,5 +398,56 @@ public class SQLTable
         ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint(constraintName, foreignKeyColumn, tableReference, columnReference);
         this.constraints.add(foreignKeyConstraint);
         return foreignKeyConstraint;
+    }
+
+    // ------ toString ------ //
+    @Override
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer();
+        String representation;
+        int i, columnsCount = this.columns.size(), constraintsCount = this.constraints.size();
+
+        buffer.append(CREATE_TABLE_KEYWORD).append(" (\n");
+
+        // columns edition
+        for(i = 0; i < columnsCount; i++)
+        {
+            SQLTableColumn column = this.columns.get(i);
+            representation = "\t" + column.toString().trim();
+            if(i == columnsCount)
+            {
+                if(constraintsCount > 0)
+                {
+                    representation += ",";
+                }
+            } else
+            {
+                if(i != (columnsCount - 1))
+                {
+                    representation += ",\n";
+                }
+            }
+
+            buffer.append(representation);
+        }
+
+        // constraints edition
+        for(i = 0; i < constraintsCount; i++)
+        {
+            BaseConstraint constraint = this.constraints.get(i);
+            representation = "\t" + constraint.toString().trim();
+            
+            if(i != (constraintsCount - 1))
+            {
+                representation += ",\n";
+            }
+
+            buffer.append(representation);
+        }
+
+        buffer.append("\n);");
+
+        return buffer.toString();
     }
 }

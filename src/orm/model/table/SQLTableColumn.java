@@ -8,6 +8,21 @@ public class SQLTableColumn
     private static final int INVALID_SIZE = -1;
 
     /**
+     * The <code>Auto Increment</code> keyword in SQL
+     */
+    private static final String AUTO_INCREMENT_KEYWORD = "AUTO_INCREMENT";
+
+    /**
+     * The <code>Default</code> keyword in SQL
+     */
+    private static final String DEFAULT_KEYWORD = "DEFAULT";
+
+    /**
+     * The <code>Not Null</code keyword in SQL
+     */
+    private static final String NOT_NULL_KEYWORD = "NOT NULL";
+
+    /**
      * The type of the column
      */
     private SQLTableType columnType;
@@ -37,12 +52,13 @@ public class SQLTableColumn
      */
     private int size;
     
-
     public SQLTableColumn(String columnName, SQLTableType columnType)
     {
         this.columnName = columnName;
         this.columnType = columnType;
-        this.defaultValue = "";
+        this.defaultValue = null;
+        this.isNullable = false;
+        this.isAutoIncrement = false;
         this.size = INVALID_SIZE;
     }
 
@@ -52,9 +68,54 @@ public class SQLTableColumn
         this.size = size;
     }
 
+    // ------ Setter methods ------ //
+
+    /**
+     * Set a default value for the current column
+     * @param value The default value
+     * @return The current SQLTableColumn
+     */
+    public SQLTableColumn defaultValue(Object value)
+    {
+        this.defaultValue = value;
+        return this;
+    }
+
+    /**
+     * Set at <code>true</code> the nullable status
+     * @return The current SQLTableColumn
+     */
+    public SQLTableColumn nullable()
+    {
+        this.isNullable = true;
+        return this;
+    }
+
+    /**
+     * Set at <code>true</code> the auto increment status
+     * @return The current SQLTableColumn
+     */
+    public SQLTableColumn autoIncrement()
+    {
+        this.isAutoIncrement = true;
+        return this;
+    }
+
     @Override
     public String toString()
     {
-        return this.columnName + " " + columnType;
+        StringBuffer buffer = new StringBuffer();
+        buffer.append(this.columnName)
+              .append(" ")
+              .append(this.columnType)
+              .append(this.size != INVALID_SIZE ? "(" + this.size + ")" : "")
+              .append(" ")
+              .append(this.isNullable ? "" : NOT_NULL_KEYWORD)
+              .append(" ")
+              .append(this.defaultValue != null ? DEFAULT_KEYWORD + " '" + this.defaultValue + "'" : "")
+              .append(" ")
+              .append(this.isAutoIncrement ? AUTO_INCREMENT_KEYWORD : "");
+
+        return buffer.toString();
     }
 }
