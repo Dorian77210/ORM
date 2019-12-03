@@ -3,12 +3,17 @@ package orm.model.table;
 // local imports
 import orm.model.table.constraint.BaseConstraint;
 import orm.model.table.constraint.ForeignKeyConstraint;
+import orm.ORM;
 
 import java.util.List;
 import java.util.ArrayList;
 
 public class SQLTable
 {
+    /**
+     * The <code>Create Table</code> keyword in SQL
+     */
+    private static final String CREATE_TABLE_KEYWORD = "CREATE TABLE";
 
     /**
      * The name of the table
@@ -394,5 +399,76 @@ public class SQLTable
         ForeignKeyConstraint foreignKeyConstraint = new ForeignKeyConstraint(constraintName, foreignKeyColumn, tableReference, columnReference);
         this.constraints.add(foreignKeyConstraint);
         return foreignKeyConstraint;
+    }
+
+    // -------- Updates methods ------ //
+
+    /**
+     * Create the current table in the database
+     * @return <true> if it was a success, else <code>false</code>
+     */
+    public boolean create()
+    {
+        return ORM.createTable(this).executeUpdate() != null;
+    }
+
+    /**
+     * Drop the current table
+     * @return <true> if it was a success, else <code>false</code>
+     */
+    public boolean drop()
+    {
+        return ORM.deleteFrom(this.tableName).executeUpdate() != null;
+    }
+
+    // ------ toString ------ //
+    @Override
+    public String toString()
+    {
+        StringBuffer buffer = new StringBuffer();
+        String representation;
+        int i, columnsCount = this.columns.size(), constraintsCount = this.constraints.size();
+
+        buffer.append(CREATE_TABLE_KEYWORD).append(" ").append(this.tableName).append(" (\n");
+
+        // columns edition
+        for(i = 0; i < columnsCount; i++)
+        {
+            SQLTableColumn column = this.columns.get(i);
+            representation = "\t" + column.toString().trim();
+            if(i == columnsCount)
+            {
+                if(constraintsCount > 0)
+                {
+                    representation += ",";
+                }
+            } else
+            {
+                if(i != (columnsCount - 1))
+                {
+                    representation += ",\n";
+                }
+            }
+
+            buffer.append(representation);
+        }
+
+        // constraints edition
+        for(i = 0; i < constraintsCount; i++)
+        {
+            BaseConstraint constraint = this.constraints.get(i);
+            representation = "\t" + constraint.toString().trim();
+            
+            if(i != (constraintsCount - 1))
+            {
+                representation += ",\n";
+            }
+
+            buffer.append(representation);
+        }
+
+        buffer.append("\n);");
+
+        return buffer.toString();
     }
 }

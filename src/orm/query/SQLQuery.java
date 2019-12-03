@@ -486,8 +486,6 @@ public class SQLQuery extends AbstractSQLQuery
         return this;
     }
 
-    
-
     // ----------- Execute methods ----------- //
 
     /**
