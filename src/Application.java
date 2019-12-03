@@ -20,7 +20,15 @@ public class Application {
                 table.string("FirstName", 255).nullable();
                 table.integer("Age").nullable();
                 table.string("City", 255).defaultValue("Sandrine");
-                System.out.println(table.toString());
+
+                if(table.create())
+                {
+                    System.out.println("Created");
+                    if(table.drop())
+                    {
+                        System.out.println("Dropped");
+                    }
+                }
             }
         }
     }

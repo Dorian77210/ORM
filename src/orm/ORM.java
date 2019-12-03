@@ -17,11 +17,14 @@ import json.JSONReader;
 
 import orm.query.SQLQuery;
 import orm.query.clause.AbstractClause;
+import orm.query.clause.CreateTableClause;
 import orm.query.clause.SelectClause;
 import orm.query.clause.FromClause;
 import orm.query.clause.InsertIntoClause;
 import orm.query.clause.UpdateClause;
 import orm.query.clause.DeleteClause;
+import orm.query.clause.DropTableClause;
+import orm.model.table.SQLTable;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -294,5 +297,27 @@ public class ORM
     public static SQLQuery all(String table)
     {
         return new SQLQuery(new SelectClause("*"), new FromClause(table));
+    }
+
+    // ----------- Table methods ---------- //
+
+    /**
+     * Create a new table in the database
+     * @param table The new table to create
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery createTable(SQLTable table)
+    {
+        return new SQLQuery(new CreateTableClause(table));
+    }
+    
+    /**
+     * Drop a table in the database
+     * @param tableName The name of the table
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery dropTable(String tableName)
+    {
+        return new SQLQuery(new DropTableClause(tableName));
     }
 }

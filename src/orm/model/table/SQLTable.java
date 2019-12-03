@@ -3,6 +3,7 @@ package orm.model.table;
 // local imports
 import orm.model.table.constraint.BaseConstraint;
 import orm.model.table.constraint.ForeignKeyConstraint;
+import orm.ORM;
 
 import java.util.List;
 import java.util.ArrayList;
@@ -400,6 +401,26 @@ public class SQLTable
         return foreignKeyConstraint;
     }
 
+    // -------- Updates methods ------ //
+
+    /**
+     * Create the current table in the database
+     * @return <true> if it was a success, else <code>false</code>
+     */
+    public boolean create()
+    {
+        return ORM.createTable(this).executeUpdate() != null;
+    }
+
+    /**
+     * Drop the current table
+     * @return <true> if it was a success, else <code>false</code>
+     */
+    public boolean drop()
+    {
+        return ORM.deleteFrom(this.tableName).executeUpdate() != null;
+    }
+
     // ------ toString ------ //
     @Override
     public String toString()
@@ -408,7 +429,7 @@ public class SQLTable
         String representation;
         int i, columnsCount = this.columns.size(), constraintsCount = this.constraints.size();
 
-        buffer.append(CREATE_TABLE_KEYWORD).append(" (\n");
+        buffer.append(CREATE_TABLE_KEYWORD).append(" ").append(this.tableName).append(" (\n");
 
         // columns edition
         for(i = 0; i < columnsCount; i++)
