@@ -405,7 +405,7 @@ public class SQLTable
 
     /**
      * Create the current table in the database
-     * @return <true> if it was a success, else <code>false</code>
+     * @return <code>true</code> if it was a success, else <code>false</code>
      */
     public boolean create()
     {
@@ -414,7 +414,7 @@ public class SQLTable
 
     /**
      * Drop the current table
-     * @return <true> if it was a success, else <code>false</code>
+     * @return <code>true</code> if it was a success, else <code>false</code>
      */
     public boolean drop()
     {
