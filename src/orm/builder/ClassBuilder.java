@@ -11,7 +11,6 @@ import orm.annotation.RefersToField;
 import orm.annotation.AllowCascadingLoading;
 import orm.annotation.HasMany;
 import orm.exception.BuildingObjectException;
-import orm.exception.FetchingResultException;
 import orm.model.BaseModel;
 
 import orm.types.SQLAbstractType;

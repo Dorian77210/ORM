@@ -14,7 +14,7 @@ public class PostModel extends BaseModel
     @RefersToField(tableField = "resume", type = "orm.types.SQLString")
     public String resume;
 
-    @RefersToField(tableField = "user_id", type = "orm.types.SQLInteger")
+    @RefersToField(tableField = "user_id", type = "orm.types.SQLLong")
     private long userId;
     
     public PostModel()
@@ -25,6 +25,6 @@ public class PostModel extends BaseModel
     @Override
     public String toString()
     {
-        return this.id + " " + this.resume;
+        return this.id + " " + this.resume + " " + this.userId;
     }
 }

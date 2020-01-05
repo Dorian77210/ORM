@@ -1,12 +1,12 @@
 package orm.types;
 
-public class SQLInteger extends SQLAbstractType
+public class SQLLong extends SQLAbstractType
 {
     /**
-     * Constructor of SQLInteger
+     * Constructor of SQLLong
      * @param data The current data
      */
-    public SQLInteger(String data)
+    public SQLLong(String data)
     {
         super(data);
     }
@@ -14,6 +14,6 @@ public class SQLInteger extends SQLAbstractType
     @Override
     public Object getData()
     {
-        return Integer.parseInt(this.data);
+        return Long.parseLong(this.data);
     }
 }
