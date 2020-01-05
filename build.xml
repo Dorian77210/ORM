@@ -13,7 +13,7 @@
     <property name="exe" location="exe"/>
 
     <!-- Compiler variables -->
-    <property name="JDK13.dir" location="/usr/lib64/jvm/jdk-13.0.1" />
+    <property name="JDK13.dir" location="/usr/lib/jvm/java-13-oracle" />
     <property name="javac13" location="${JDK13.dir}/bin/javac" />
 
     <target name="clean">
@@ -27,7 +27,7 @@
         <mkdir dir="${javadoc}" />
         <mkdir dir="${exe}" />
 
-        <javac srcdir="${src}" destdir="${bin}" debug="on" executable="${javac13}" fork="yes"
+        <javac srcdir="${src}" destdir="${bin}" debug="on" fork="yes"
       includeantruntime="false">
             <classpath>
                 <pathelement path="lib/json.jar" />

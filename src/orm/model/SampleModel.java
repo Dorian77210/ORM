@@ -11,7 +11,7 @@ public class SampleModel extends BaseModel
     @PrimaryKey
     private long id;
 
-    @RefersToField(tableField = "name", type = "orm.types.SQLString")
+    @RefersToField(tableField = "lastname", type = "orm.types.SQLString")
     public String name;
     
     public SampleModel()

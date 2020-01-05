@@ -2,7 +2,10 @@ package orm.model.table;
 
 // local imports
 import orm.model.table.constraint.BaseConstraint;
+import orm.model.table.constraint.CheckConstraint;
 import orm.model.table.constraint.ForeignKeyConstraint;
+import orm.model.table.constraint.PrimaryKeyConstraint;
+import orm.query.operator.SQLOperator;
 import orm.ORM;
 
 import java.util.List;
@@ -401,6 +404,28 @@ public class SQLTable
         return foreignKeyConstraint;
     }
 
+    /**
+     * Add a primary key constraint in the table
+     * @param fields The list of fields that composed the constraint
+     */
+    public void primaryKey(String ...fields)
+    {
+        PrimaryKeyConstraint primaryKeyConstraint = new PrimaryKeyConstraint(fields);
+        this.constraints.add(primaryKeyConstraint);
+    }
+
+    /**
+     * Add a check constraint in the table
+     * @param field The target field for the constraint
+     * @param operator The operator for the constraint
+     * @param value The target value for the constraint
+     */
+    public void checkConstraint(String field, SQLOperator operator, Object value)
+    {
+        CheckConstraint checkConstraint = new CheckConstraint(field, operator, value);
+        this.constraints.add(checkConstraint);
+    }
+
     // -------- Updates methods ------ //
 
     /**
@@ -457,12 +482,7 @@ public class SQLTable
         for(i = 0; i < constraintsCount; i++)
         {
             BaseConstraint constraint = this.constraints.get(i);
-            representation = "\t" + constraint.toString().trim();
-            
-            if(i != (constraintsCount - 1))
-            {
-                representation += ",\n";
-            }
+            representation = ",\n\t" + constraint.getConstraintRepresentation().trim();
 
             buffer.append(representation);
         }

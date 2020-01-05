@@ -23,6 +23,11 @@ public class SQLTableColumn
     private static final String NOT_NULL_KEYWORD = "NOT NULL";
 
     /**
+     * The <code>Unique</code> keyword in SQL
+     */
+    private static final String UNIQUE_KEYWORD = "UNIQUE";
+
+    /**
      * The type of the column
      */
     private SQLTableType columnType;
@@ -48,6 +53,16 @@ public class SQLTableColumn
     private boolean isNullable;
 
     /**
+     * Attribute to know if the column is a primary key
+     */
+    private boolean isPrimaryKey;
+
+    /**
+     * Attribute to know if the column is an unique field
+     */
+    private boolean isUnique;
+
+    /**
      * Attribute for specifics columns as Varchar
      */
     private int size;
@@ -59,6 +74,8 @@ public class SQLTableColumn
         this.defaultValue = null;
         this.isNullable = false;
         this.isAutoIncrement = false;
+        this.isPrimaryKey = false;
+        this.isUnique = false;
         this.size = INVALID_SIZE;
     }
 
@@ -101,6 +118,18 @@ public class SQLTableColumn
         return this;
     }
 
+    public SQLTableColumn primaryKey()
+    {
+        this.isPrimaryKey = true;
+        return this;
+    }
+
+    public SQLTableColumn unique()
+    {
+        this.isUnique = true;
+        return this;
+    }
+
     @Override
     public String toString()
     {
@@ -114,7 +143,10 @@ public class SQLTableColumn
               .append(" ")
               .append(this.defaultValue != null ? DEFAULT_KEYWORD + " '" + this.defaultValue + "'" : "")
               .append(" ")
-              .append(this.isAutoIncrement ? AUTO_INCREMENT_KEYWORD : "");
+              .append(this.isAutoIncrement ? AUTO_INCREMENT_KEYWORD : "")
+              .append(" ")
+              .append(this.isUnique ? " UNIQUE " : "")
+              .append(this.isPrimaryKey ? " PRIMARY KEY " : "");
 
         return buffer.toString();
     }

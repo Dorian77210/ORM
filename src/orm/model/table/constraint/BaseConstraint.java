@@ -14,5 +14,5 @@ public abstract class BaseConstraint
      * Get a stringified representation of the current constraint
      * @return Te stringified representation of the current constraint
      */
-    abstract String getConstraintRepresentation();
+    public abstract String getConstraintRepresentation();
 }

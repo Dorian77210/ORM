@@ -115,6 +115,7 @@ public class ForeignKeyConstraint extends BaseConstraint
               .append(this.onDelete)
               .append(" ")
               .append(ON_UPDATE_KEYWORD)
+              .append(" ")
               .append(this.onUpdate);
 
         return buffer.toString();
