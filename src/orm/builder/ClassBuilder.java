@@ -1,11 +1,17 @@
 package orm.builder;
 
 // local imports
+import orm.ORM;
+
 import orm.collection.SQLCollection;
+import orm.query.operator.SQLOperator;
 import orm.query.result.SQLResultSet;
 import orm.annotation.RefersToTable;
 import orm.annotation.RefersToField;
+import orm.annotation.AllowCascadingLoading;
+import orm.annotation.HasMany;
 import orm.exception.BuildingObjectException;
+import orm.exception.FetchingResultException;
 import orm.model.BaseModel;
 
 import orm.types.SQLAbstractType;
@@ -31,7 +37,7 @@ public class ClassBuilder implements IClassBuilder
     {
         SQLCollection<T> collection = new SQLCollection<T>();
         JSONArray data = set.getResult();
-        int i, dataLength = data.length(), j;
+        int i, dataLength = data.length(), j, k;
         T element;
         Field field;
 
@@ -43,23 +49,28 @@ public class ClassBuilder implements IClassBuilder
 
             // retrieve the fields of the class
             Field[] fields = clazz.getDeclaredFields();
-
             for(i = 0; i < dataLength; i++)
             {
                 // fetch on the data to retrieve each JSONArray
                 JSONArray currentArray = data.getJSONArray(i);
                 int currentArrayLength = currentArray.length();
-
                 // create a new instance of the class
                 try
                 {
-                    element = clazz.newInstance();
+                    Constructor<T> constructor = clazz.getConstructor();
+                    element = constructor.newInstance();
                 } catch(IllegalAccessException illegalAccessException)
                 {   
                     throw new BuildingObjectException(illegalAccessException.getMessage());
                 } catch(InstantiationException instantiationException)
                 {
                     throw new BuildingObjectException(instantiationException.getMessage());
+                } catch(NoSuchMethodException noSuchMethodException)
+                {
+                    throw new BuildingObjectException(noSuchMethodException.getMessage());
+                } catch(InvocationTargetException invocationTargetException)
+                {
+                    throw new BuildingObjectException(invocationTargetException.getMessage());
                 }
 
                 // fetch on the columns of the current JSONObject
@@ -110,6 +121,41 @@ public class ClassBuilder implements IClassBuilder
                             } catch(InvocationTargetException invocationTargetException)
                             {
                                 throw new BuildingObjectException(invocationTargetException.getMessage());
+                            }
+                        }
+                    }
+                }
+
+                // load cascading models if it is allowed
+                if(clazz.getAnnotation(AllowCascadingLoading.class) != null)
+                {
+                    for(k = 0; k < fields.length; ++k)
+                    {
+                        field = fields[k];
+                        HasMany hasManyAnnotation = field.getAnnotation(HasMany.class);
+                        if(hasManyAnnotation != null)
+                        {
+                            String targetClass = hasManyAnnotation.targetClass();
+                            String targetColumn = hasManyAnnotation.targetColumn();
+                            String sourceForeignKeyField = hasManyAnnotation.sourceForeignKeyField();
+
+                            // retrieve the target class
+                            try
+                            {
+                                Class<?> targetClazz = Class.forName(targetClass);
+                                String targetTable = targetClazz.getAnnotation(RefersToTable.class).table();
+                                Field tempField = ClassBuilder.findFieldByName(sourceForeignKeyField, fields);
+                                tempField.setAccessible(true);
+                                Object value = tempField.get(element);
+
+                                Object model = targetClazz.getConstructor().newInstance();
+                                SQLResultSet result = ORM.select("*").from(targetTable).where(targetColumn, SQLOperator.EQUAL, value).executeQuery();
+                                SQLCollection<? extends BaseModel> targetCollection = this.build(BaseModel.class.cast(model).getClass(), result);
+                                targetCollection.dump();
+                                field.set(element, targetCollection);
+                            } catch(Exception exception)
+                            {
+                                throw new BuildingObjectException(exception.getMessage());
                             }
                         }
                     }

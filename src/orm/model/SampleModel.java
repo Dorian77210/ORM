@@ -3,8 +3,12 @@ package orm.model;
 import orm.annotation.RefersToField;
 import orm.annotation.RefersToTable;
 import orm.annotation.PrimaryKey;
+import orm.annotation.AllowCascadingLoading;
+import orm.annotation.HasMany;
+import orm.collection.SQLCollection;
 
 @RefersToTable(table = "User")
+@AllowCascadingLoading
 public class SampleModel extends BaseModel
 {
     @RefersToField(tableField = "id", type = "orm.types.SQLInteger")
@@ -13,6 +17,9 @@ public class SampleModel extends BaseModel
 
     @RefersToField(tableField = "lastname", type = "orm.types.SQLString")
     public String name;
+
+    @HasMany(targetClass = "orm.model.PostModel", targetColumn = "user_id", sourceForeignKeyField = "id")
+    public SQLCollection<PostModel> posts;
     
     public SampleModel()
     {
