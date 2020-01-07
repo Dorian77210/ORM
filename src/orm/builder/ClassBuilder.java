@@ -10,8 +10,8 @@ import orm.annotation.RefersToTable;
 import orm.annotation.RefersToField;
 import orm.annotation.AllowCascadingLoading;
 import orm.annotation.HasMany;
+import orm.annotation.HasOne;
 import orm.exception.BuildingObjectException;
-import orm.exception.FetchingResultException;
 import orm.model.BaseModel;
 
 import orm.types.SQLAbstractType;
@@ -133,11 +133,24 @@ public class ClassBuilder implements IClassBuilder
                     {
                         field = fields[k];
                         HasMany hasManyAnnotation = field.getAnnotation(HasMany.class);
-                        if(hasManyAnnotation != null)
+                        HasOne hasOneAnnotation = field.getAnnotation(HasOne.class);
+                        
+                        if(hasManyAnnotation != null || hasOneAnnotation != null)
                         {
-                            String targetClass = hasManyAnnotation.targetClass();
-                            String targetColumn = hasManyAnnotation.targetColumn();
-                            String sourceForeignKeyField = hasManyAnnotation.sourceForeignKeyField();
+                            String targetClass, targetColumn, sourceForeignKeyField;
+
+                            if(hasManyAnnotation != null)
+                            {
+                                targetClass = hasManyAnnotation.targetClass();
+                                targetColumn = hasManyAnnotation.targetColumn();
+                                sourceForeignKeyField = hasManyAnnotation.sourceForeignKeyField();
+                            }
+                            else
+                            {
+                                targetClass = hasOneAnnotation.targetClass();
+                                targetColumn = hasOneAnnotation.targetColumn();
+                                sourceForeignKeyField = hasOneAnnotation.sourceForeignKeyField();
+                            }
 
                             // retrieve the target class
                             try
@@ -147,12 +160,19 @@ public class ClassBuilder implements IClassBuilder
                                 Field tempField = ClassBuilder.findFieldByName(sourceForeignKeyField, fields);
                                 tempField.setAccessible(true);
                                 Object value = tempField.get(element);
-
+                                
                                 Object model = targetClazz.getConstructor().newInstance();
-                                SQLResultSet result = ORM.select("*").from(targetTable).where(targetColumn, SQLOperator.EQUAL, value).executeQuery();
-                                SQLCollection<? extends BaseModel> targetCollection = this.build(BaseModel.class.cast(model).getClass(), result);
-                                targetCollection.dump();
-                                field.set(element, targetCollection);
+                                if(model instanceof BaseModel)
+                                {
+                                    SQLResultSet result = ORM.select("*").from(targetTable).where(targetColumn, SQLOperator.EQUAL, value).executeQuery();
+                                    SQLCollection<? extends BaseModel> targetCollection = this.build(BaseModel.class.cast(model).getClass(), result);
+                                    field.set(element, hasOneAnnotation != null ? targetCollection.first() : targetCollection);
+                                }
+                                else
+                                {
+                                    throw new BuildingObjectException("The class " + targetClazz + " must extend to the class BaseModel");
+                                }
+                                
                             } catch(Exception exception)
                             {
                                 throw new BuildingObjectException(exception.getMessage());

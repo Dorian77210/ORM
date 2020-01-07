@@ -18,13 +18,17 @@ import json.JSONReader;
 import orm.query.SQLQuery;
 import orm.query.clause.AbstractClause;
 import orm.query.clause.CreateTableClause;
+import orm.query.clause.view.CreateViewClause;
+import orm.query.clause.view.CreateOrReplaceClause;
 import orm.query.clause.SelectClause;
 import orm.query.clause.FromClause;
 import orm.query.clause.InsertIntoClause;
 import orm.query.clause.UpdateClause;
 import orm.query.clause.DeleteClause;
 import orm.query.clause.DropTableClause;
+import orm.query.clause.view.DeleteViewClause;
 import orm.model.table.SQLTable;
+import orm.query.clause.RawQuery;
 
 /**
  * The class <code>ORM<code> is the base class of the ORM. It 
@@ -222,6 +226,17 @@ public class ORM
     }
 
     /**
+     * Create a distinct select clause for the current query
+     * @param field The field to select 
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery selectDistinct(String field)
+    {
+        AbstractClause select = new SelectClause(field, true);
+        return new SQLQuery(select);
+    }
+
+    /**
      * Create a select clause for the current query
      * @param fields The fields to select
      * @return The SQLQuery associated with the current query
@@ -229,6 +244,17 @@ public class ORM
     public static SQLQuery select(String ...fields)
     {
         AbstractClause select = new SelectClause(fields);
+        return new SQLQuery(select);
+    }
+
+    /**
+     * Create a distinct select clause for the current query
+     * @param fields The fields to select
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery selectDistinct(String ...fields)
+    {
+        AbstractClause select = new SelectClause(true, fields);
         return new SQLQuery(select);
     }
 
@@ -243,6 +269,16 @@ public class ORM
         return new SQLQuery(select);
     }
 
+    /**
+     * Create a distinct select clause for the current query
+     * @param fieldList The list of the fields to select
+     * @return The SQLQuery associated with the current query
+     */
+    public static SQLQuery selectDistinct(List<String> listFields)
+    {
+        AbstractClause select = new SelectClause(listFields, true);
+        return new SQLQuery(select);
+    }
 
     // ----------- Insert/Update methods --------- //
 
@@ -319,5 +355,51 @@ public class ORM
     public static SQLQuery dropTable(String tableName)
     {
         return new SQLQuery(new DropTableClause(tableName));
+    }
+
+    // ----------- View methods ---------- //
+    
+    /**
+     * Create a view according to her name and a query
+     * @param viewName The name of the view
+     * @param query The query associated to the view
+     * @return <code>true</code> if the creation is a success, else <code>false</code>
+     */
+    public static boolean createView(String viewName, SQLQuery query)
+    {
+        return new SQLQuery(new CreateViewClause(viewName, query)).executeUpdate() != null;
+    }
+
+    /**
+     * Create or replace a view according to her name and a query
+     * @param viewName The name of the view
+     * @param query The query associated to the view
+     * @return <code>true</code> if the creation is a success, else <code>false</code>
+     */
+    public static boolean createOrReplaceView(String viewName, SQLQuery query)
+    {
+        return new SQLQuery(new CreateOrReplaceClause(viewName, query)).executeUpdate() != null;
+    }
+
+    /**
+     * Delete a view by its name
+     * @param viewName The name of the target view
+     * @return <code>true</code> if the deletion is a success, else <code>false</code>
+     */
+    public static boolean deleteView(String viewName)
+    {
+        return new SQLQuery(new DeleteViewClause(viewName)).executeUpdate() != null;
+    }
+
+    // ----------- Raw Query ---------- //
+
+    /**
+     * Create a raw sql query
+     * @param sql The sql associated
+     * @return The SQLQuery created
+     */
+    public static SQLQuery rawQuery(String sql)
+    {
+        return new SQLQuery(new RawQuery(sql));
     }
 }
