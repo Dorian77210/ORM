@@ -4,8 +4,9 @@ import orm.annotation.RefersToField;
 import orm.annotation.RefersToTable;
 import orm.annotation.PrimaryKey;
 import orm.annotation.AllowCascadingLoading;
-import orm.annotation.HasMany;
+import orm.annotation.HasOne;
 import orm.collection.SQLCollection;
+import orm.annotation.HasMany;
 
 @RefersToTable(table = "User")
 @AllowCascadingLoading

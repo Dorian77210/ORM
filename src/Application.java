@@ -15,11 +15,12 @@ public class Application
             {
                 try
                 {
-                    SQLResultSet result = ORM.select("*").from("User").where("id", SQLOperator.EQUAL, 1).executeQuery();
-                    SQLCollection<SampleModel> c = result.build(SampleModel.class);
-                } catch(Exception e)
+                    SQLCollection<SampleModel> collection = ORM.select("*").from("User").where("id", SQLOperator.EQUAL, 1).executeQuery().build(SampleModel.class);
+                    SampleModel model = collection.first();
+                    model.posts.dump();
+                } catch(Exception exception)
                 {
-                    System.err.println(e);
+                    System.err.println(exception);
                 }
             }
         }
