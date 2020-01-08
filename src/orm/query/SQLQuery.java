@@ -491,7 +491,7 @@ public class SQLQuery extends AbstractSQLQuery
     /**
      * Execute the current query
      */
-    public SQLResultSet executeQuery() throws FetchingResultException
+    public synchronized SQLResultSet executeQuery() throws FetchingResultException
     {
         Connection connection = ORM.getConnection();
         ResultSet result;
@@ -522,7 +522,7 @@ public class SQLQuery extends AbstractSQLQuery
      * Execute an update in the database
      * @return <code>true</code> if the update is a success, else <code>false</code>
      */
-    public ResultSet executeUpdate()
+    public synchronized ResultSet executeUpdate()
     {
         Connection connection = ORM.getConnection();
         PreparedStatement statement;
