@@ -1,4 +1,4 @@
-package orm.test.query;
+package orm.test.query.clause.jointures;
 
 import orm.ORM;
 import orm.query.SQLQuery;
@@ -6,12 +6,12 @@ import orm.query.SQLQuery;
 import orm.test.BaseTest;
 import orm.test.exception.TestFailedException;
 
-import java.util.Arrays;
 import java.util.List;
+import java.util.Arrays;
 
-public class SQLQuerySelectDistinct extends BaseTest
+public class SQLQuerySelect extends BaseTest
 {
-    public SQLQuerySelectDistinct()
+    public SQLQuerySelect()
     {
         super();
     }
@@ -19,30 +19,31 @@ public class SQLQuerySelectDistinct extends BaseTest
     @Override
     public void run() throws TestFailedException
     {
-        SQLQuery query = ORM.selectDistinct("*");
+        SQLQuery query = ORM.select("*");
 
         String sql = query.toString().replace("\n", "");
-        String expectedSQL = "SELECT DISTINCT *";
+        String expectedSQL = "SELECT *";
         if(!expectedSQL.equals(sql))
         {
             throw new TestFailedException("The sql query '" + sql + "' is not equal to '" + expectedSQL + "'");
         }
 
-        query = ORM.selectDistinct("titi", "tata");
+        query = ORM.select("titi", "tata");
         sql = query.toString().replace("\n", "");
-        expectedSQL = "SELECT DISTINCT titi, tata";
+        expectedSQL = "SELECT titi, tata";
         if(!expectedSQL.equals(sql))
         {
             throw new TestFailedException("The sql query '" + sql + "' is not equal to '" + expectedSQL + "'");
         }
 
         List<String> columns = Arrays.asList("titi", "tata");
-        query = ORM.selectDistinct(columns);
+        query = ORM.select(columns);
+        sql = query.toString().replace("\n", "");
         if(!expectedSQL.equals(sql))
         {
             throw new TestFailedException("The sql query '" + sql + "' is not equal to '" + expectedSQL + "'");
         }
 
-        System.out.println("Test passed");
+        System.out.println("Test 'SQLQuerySelect' passed");
     }
 }

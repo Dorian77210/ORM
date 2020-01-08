@@ -20,6 +20,7 @@ import orm.query.condition.OrCondition;
 import orm.query.clause.jointures.CrossJoinClause;
 import orm.exception.FetchingResultException;
 import orm.query.clause.FromClause;
+import orm.query.clause.jointures.FullJoinClause;
 import orm.query.clause.GroupByClause;
 import orm.query.clause.jointures.InnerJoinClause;
 import orm.query.clause.ensemblist.IntersectClause;
@@ -117,6 +118,20 @@ public class SQLQuery extends AbstractSQLQuery
     {
         AbstractClause leftJoin = new LeftJoinClause(table, firstField, secondField);
         this.clauses.add(leftJoin);
+        return this;
+    }
+
+    /**
+     * Create a full jointure
+     * @param table The target table of the jointure
+     * @param firstField The first field of the jointure
+     * @param secondField The second field of the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery fullJoin(String table, String firstField, String secondField)
+    {
+        AbstractClause fullJoin = new FullJoinClause(table, firstField, secondField);
+        this.clauses.add(fullJoin);
         return this;
     }
 
