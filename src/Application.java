@@ -3,6 +3,7 @@ import orm.ORM;
 import orm.test.util.TestRunner;
 import orm.test.query.clause.ensemblist.*;
 import orm.test.query.clause.jointures.*;
+import orm.test.model.view.*;
 
 public class Application
 {
@@ -26,6 +27,8 @@ public class Application
                 TestRunner.runTest(SQLQueryMinus.class);
                 TestRunner.runTest(SQLQueryUnion.class);
                 TestRunner.runTest(SQLQueryUnionAll.class);
+
+                TestRunner.runTest(SelectOnViewTest.class);
             }
         }
     }

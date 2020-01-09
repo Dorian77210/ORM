@@ -63,7 +63,7 @@ public class SQLQuery extends AbstractSQLQuery
         super(clauses);
     }
 
-    // ---------- From method -------- //
+    // ---------- From methods -------- //
     
     /**
      * Select a table for the current query
@@ -74,6 +74,13 @@ public class SQLQuery extends AbstractSQLQuery
     {
         AbstractClause from = new FromClause(table);
         this.clauses.add(from);
+        return this;
+    }
+
+    public SQLQuery fromAs(String table, String alias)
+    {
+        AbstractClause fromAs = new FromClause(table, alias);
+        this.clauses.add(fromAs);
         return this;
     }
 
@@ -510,7 +517,7 @@ public class SQLQuery extends AbstractSQLQuery
     {
         Connection connection = ORM.getConnection();
         ResultSet result;
-        PreparedStatement statement;
+        PreparedStatement statement = null;
         String query = this.toString();
         SQLResultSet set = new SQLResultSet();
 
@@ -528,6 +535,15 @@ public class SQLQuery extends AbstractSQLQuery
         {
             System.err.println(exception.getMessage());
             throw new FetchingResultException("Error during fetching on the result of your query");
+        } finally
+        {
+            try
+            {
+                statement.close();
+            } catch(Exception e)
+            {
+
+            }
         }
 
         return set;
@@ -540,7 +556,7 @@ public class SQLQuery extends AbstractSQLQuery
     public synchronized ResultSet executeUpdate()
     {
         Connection connection = ORM.getConnection();
-        PreparedStatement statement;
+        PreparedStatement statement = null;
         String query = this.toString();
 
         try {
@@ -551,6 +567,15 @@ public class SQLQuery extends AbstractSQLQuery
         {
             System.err.println(exception.getMessage());
             return null;
+        } finally
+        {
+            try
+            {
+                statement.close();
+            } catch(Exception e)
+            {
+
+            }
         }
     }
 
