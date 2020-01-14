@@ -20,6 +20,7 @@ import orm.query.condition.OrCondition;
 import orm.query.clause.jointures.CrossJoinClause;
 import orm.exception.FetchingResultException;
 import orm.query.clause.FromClause;
+import orm.query.clause.jointures.FullJoinClause;
 import orm.query.clause.GroupByClause;
 import orm.query.clause.jointures.InnerJoinClause;
 import orm.query.clause.ensemblist.IntersectClause;
@@ -62,7 +63,7 @@ public class SQLQuery extends AbstractSQLQuery
         super(clauses);
     }
 
-    // ---------- From method -------- //
+    // ---------- From methods -------- //
     
     /**
      * Select a table for the current query
@@ -73,6 +74,13 @@ public class SQLQuery extends AbstractSQLQuery
     {
         AbstractClause from = new FromClause(table);
         this.clauses.add(from);
+        return this;
+    }
+
+    public SQLQuery fromAs(String table, String alias)
+    {
+        AbstractClause fromAs = new FromClause(table, alias);
+        this.clauses.add(fromAs);
         return this;
     }
 
@@ -117,6 +125,20 @@ public class SQLQuery extends AbstractSQLQuery
     {
         AbstractClause leftJoin = new LeftJoinClause(table, firstField, secondField);
         this.clauses.add(leftJoin);
+        return this;
+    }
+
+    /**
+     * Create a full jointure
+     * @param table The target table of the jointure
+     * @param firstField The first field of the jointure
+     * @param secondField The second field of the jointure
+     * @return The current SQLQuery
+     */
+    public SQLQuery fullJoin(String table, String firstField, String secondField)
+    {
+        AbstractClause fullJoin = new FullJoinClause(table, firstField, secondField);
+        this.clauses.add(fullJoin);
         return this;
     }
 
@@ -491,11 +513,11 @@ public class SQLQuery extends AbstractSQLQuery
     /**
      * Execute the current query
      */
-    public SQLResultSet executeQuery() throws FetchingResultException
+    public synchronized SQLResultSet executeQuery() throws FetchingResultException
     {
         Connection connection = ORM.getConnection();
         ResultSet result;
-        PreparedStatement statement;
+        PreparedStatement statement = null;
         String query = this.toString();
         SQLResultSet set = new SQLResultSet();
 
@@ -513,6 +535,15 @@ public class SQLQuery extends AbstractSQLQuery
         {
             System.err.println(exception.getMessage());
             throw new FetchingResultException("Error during fetching on the result of your query");
+        } finally
+        {
+            try
+            {
+                statement.close();
+            } catch(Exception e)
+            {
+
+            }
         }
 
         return set;
@@ -522,10 +553,10 @@ public class SQLQuery extends AbstractSQLQuery
      * Execute an update in the database
      * @return <code>true</code> if the update is a success, else <code>false</code>
      */
-    public ResultSet executeUpdate()
+    public synchronized ResultSet executeUpdate()
     {
         Connection connection = ORM.getConnection();
-        PreparedStatement statement;
+        PreparedStatement statement = null;
         String query = this.toString();
 
         try {
@@ -536,6 +567,15 @@ public class SQLQuery extends AbstractSQLQuery
         {
             System.err.println(exception.getMessage());
             return null;
+        } finally
+        {
+            try
+            {
+                statement.close();
+            } catch(Exception e)
+            {
+
+            }
         }
     }
 

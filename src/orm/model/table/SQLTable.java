@@ -19,6 +19,11 @@ public class SQLTable
     private static final String CREATE_TABLE_KEYWORD = "CREATE TABLE";
 
     /**
+     * The <code>If Not Exists</code> keyword in SQL
+     */
+    private static final String IF_NOT_EXISTS_KEYWORD = "IF NOT EXISTS";
+
+    /**
      * The name of the table
      */
     private String tableName;   
@@ -29,15 +34,35 @@ public class SQLTable
     private List<SQLTableColumn> columns;
 
     /**
+     * Boolean to know if the table has to be created only if she donesn't exist
+     */
+    private boolean createIfNotExist;
+
+    /**
      * The list of the constraints for the table
      */
     private List<BaseConstraint> constraints;
 
-    public SQLTable(String name)
+    /**
+     * Constructor of SQLTable
+     * @param name The name of the table
+     * @param createIfNotExist Create the table if she doesn't exist
+     */
+    public SQLTable(String name, boolean createIfNotExist)
     {
         this.tableName = name;
         this.columns = new ArrayList<SQLTableColumn>();
         this.constraints = new ArrayList<BaseConstraint>();
+        this.createIfNotExist = createIfNotExist;
+    }
+
+    /**
+     * Constructor of SQLTable
+     * @param name The name of the table
+     */
+    public SQLTable(String name)
+    {
+        this(name, false);
     }
 
     // -------- Types methods ------- //    
@@ -454,7 +479,13 @@ public class SQLTable
         String representation;
         int i, columnsCount = this.columns.size(), constraintsCount = this.constraints.size();
 
-        buffer.append(CREATE_TABLE_KEYWORD).append(" ").append(this.tableName).append(" (\n");
+        buffer.append(CREATE_TABLE_KEYWORD).append(" ");
+        if(this.createIfNotExist)
+        {
+            buffer.append(IF_NOT_EXISTS_KEYWORD).append(" `");
+        }
+
+        buffer.append(this.tableName).append("` (\n");
 
         // columns edition
         for(i = 0; i < columnsCount; i++)

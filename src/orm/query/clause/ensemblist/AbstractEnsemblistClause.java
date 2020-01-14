@@ -12,6 +12,6 @@ public abstract class AbstractEnsemblistClause extends AbstractClause
     public AbstractEnsemblistClause(String operator, String clause)
     {
         super();
-        this.clause += operator + " " + clause;
+        this.clause += operator + " (" + clause + ")";
     }
 }

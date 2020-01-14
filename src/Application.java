@@ -1,9 +1,9 @@
 import orm.ORM;
-import orm.collection.SQLCollection;
-import orm.model.SampleModel;
-import orm.model.table.SQLTable;
-import orm.query.operator.SQLOperator;
-import orm.query.result.SQLResultSet;
+
+import orm.test.util.TestRunner;
+import orm.test.query.clause.ensemblist.*;
+import orm.test.query.clause.jointures.*;
+import orm.test.model.view.*;
 
 public class Application
 {
@@ -13,15 +13,22 @@ public class Application
         {
             if(ORM.connect("./config.json"))
             {
-                try
-                {
-                    SQLCollection<SampleModel> collection = ORM.select("*").from("User").where("id", SQLOperator.EQUAL, 1).executeQuery().build(SampleModel.class);
-                    SampleModel model = collection.first();
-                    model.posts.dump();
-                } catch(Exception exception)
-                {
-                    System.err.println(exception);
-                }
+                TestRunner.runTest(SQLQuerySelect.class);
+                TestRunner.runTest(SQLQuerySelectDistinct.class);
+                TestRunner.runTest(SQLQueryFrom.class);
+                TestRunner.runTest(SQLQueryNaturalJoin.class);
+                TestRunner.runTest(SQLQueryCrossJoin.class);
+                TestRunner.runTest(SQLQueryRightJoin.class);
+                TestRunner.runTest(SQLQueryLeftJoin.class);
+                TestRunner.runTest(SQLQueryInnerJoin.class);
+                TestRunner.runTest(SQLQueryFullJoin.class);
+
+                TestRunner.runTest(SQLQueryIntersect.class);
+                TestRunner.runTest(SQLQueryMinus.class);
+                TestRunner.runTest(SQLQueryUnion.class);
+                TestRunner.runTest(SQLQueryUnionAll.class);
+
+                TestRunner.runTest(SelectOnViewTest.class);
             }
         }
     }
